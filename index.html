@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Main Dashboard</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #e6ffe6;
+    }
+
+    /* ===== Sidebar ===== */
+    .sidebar {
+      height: 100vh;
+      width: 250px;
+      position: fixed;
+      background-color: #006400;
+      color: white;
+      padding-top: 20px;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .sidebar a {
+      padding: 15px 25px;
+      display: block;
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    .sidebar a:hover {
+      background-color: #3cb371;
+    }
+
+    /* ===== Top Bar ===== */
+    .topbar {
+      margin-left: 250px;
+      padding: 10px 20px;
+      background-color: #006400;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .topbar img.profile {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .topbar .profile-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ===== Main Content ===== */
+    .content {
+      margin-left: 250px;
+      padding: 30px;
+      background-color: #ffffff;
+      min-height: 100vh;
+    }
+
+    .header-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .header-container img.logo {
+      width: 120px;
+      height: auto;
+    }
+
+    .header-container h1 {
+      color: #004d00;
+      font-size: 28px;
+      margin: 0;
+    }
+
+    .content p {
+      font-size: 18px;
+      margin-top: 10px;
+      text-align: left;
+    }
+
+    /* ===== Responsive ===== */
+    @media screen and (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+
+      .topbar {
+        margin-left: 0;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .content {
+        margin-left: 0;
+        padding: 20px;
+      }
+
+      .header-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .header-container h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===== Sidebar ===== -->
+  <div class="sidebar">
+    <h2>Main Dashboard</h2>
+
+    <!-- Newly Added -->
+    <a href="admission.html">Admission</a>
+    <a href="enrollment.html">Enrollment</a>
+    <a href="admin_login.html">Admin</a>
+    <a href="faculty.html">Faculty</a>
+    <a href="student.html">Student</a>
+
+    <!-- Existing -->
+    <a href="classlist.html">Class List</a>
+    <a href="grade_sheet.html">Grading Sheet</a>
+    <a href="https://www.paterostechnologicalcollege.edu.ph/">PTC Website</a>
+    <a href="logout.html">Logout</a>
+  </div>
+
+  <!-- ===== Top Bar ===== -->
+  <div class="topbar">
+    <div class="profile-info">
+      <img src="profile.jpg" alt="Profile Photo" class="profile" />
+      <div>
+        <strong>Welcome, User</strong><br>
+        Role: Administrator
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Main Content ===== -->
+  <div class="content">
+    <div class="header-container">
+      <img src="logo.png" alt="School Logo" class="logo">
+      <h1>MAIN DASHBOARD</h1>
+    </div>
+
+    <hr style="border: 2px solid gold;">
+
+    <center>
+      <i>
+        <p>
+          This dashboard allows you to manage and monitor institutional data such as
+          admissions, enrollment, faculty, students, class lists, and grading sheets.
+          Use the menu on the left to navigate between different functions.
+        </p>
+      </i>
+    </center>
+  </div>
+
+</body>
+</html>
