@@ -1,9 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>PTC Admission</title>
+
 <style>
 body {
     background-color: #2e7d32;
@@ -53,36 +53,40 @@ button {
     color: white;
     border: none;
     border-radius: 5px;
+    cursor: pointer;
 }
 </style>
+
+<!-- jsPDF CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
 <body>
 
 <div class="header">
-    <img src="logo.png">
+    <img src="Logo.png" alt="Logo">
     <h1>Pateros Technological College</h1>
 </div>
 
 <div class="container">
 <h2 style="text-align:center;color:#2e7d32;">Admission Form</h2>
 
-<form action="save_admission.php" method="POST">
+<form id="admissionForm">
 
 <label>Full Name</label>
-<input type="text" name="fullname" required>
+<input type="text" id="fullname" required>
 
 <label>Address</label>
-<input type="text" name="address" required>
+<input type="text" id="address" required>
 
 <label>Email</label>
-<input type="email" name="email" required>
+<input type="email" id="email" required>
 
 <label>Contact Number</label>
-<input type="text" name="contact" required>
+<input type="text" id="contact" required>
 
 <label>Year Level</label>
-<select name="year_level" required>
+<select id="year_level" required>
     <option value="">Select</option>
     <option>1st Year</option>
     <option>2nd Year</option>
@@ -91,7 +95,7 @@ button {
 </select>
 
 <label>Program</label>
-<select name="program" required>
+<select id="program" required>
     <option value="">Select</option>
     <option>BS Information Technology</option>
     <option>BS Tourism Management</option>
@@ -99,16 +103,38 @@ button {
     <option>TVL</option>
 </select>
 
-<button type="submit">Submit Application</button>
-
+<button type="submit">Submit & Download PDF</button>
 </form>
 </div>
 
+<script>
+document.getElementById("admissionForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(16);
+    doc.text("Pateros Technological College", 20, 20);
+    doc.setFontSize(12);
+    doc.text("Admission Form", 20, 30);
+
+    doc.line(20, 33, 190, 33);
+
+    let y = 45;
+    doc.text("Full Name: " + document.getElementById("fullname").value, 20, y); y += 10;
+    doc.text("Address: " + document.getElementById("address").value, 20, y); y += 10;
+    doc.text("Email: " + document.getElementById("email").value, 20, y); y += 10;
+    doc.text("Contact Number: " + document.getElementById("contact").value, 20, y); y += 10;
+    doc.text("Year Level: " + document.getElementById("year_level").value, 20, y); y += 10;
+    doc.text("Program: " + document.getElementById("program").value, 20, y);
+
+    y += 20;
+    doc.text("Date Generated: " + new Date().toLocaleDateString(), 20, y);
+
+    doc.save("PTC_Admission_Form.pdf");
+});
+</script>
+
 </body>
 </html>
-
-
-
-
-
-http://192.168.1.6/dashboard/
