@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PTC Enrollment Form</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #2e7d32;
+      color: white;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      padding: 20px 30px;
+      background-color: #1b5e20;
+      gap: 15px;
+    }
+
+    .header img {
+      height: 60px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .container {
+      max-width: 600px;
+      background-color: white;
+      color: black;
+      margin: 40px auto;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .container h2 {
+      text-align: center;
+      color: #2e7d32;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #1b5e20;
+    }
+
+    @media (max-width: 600px) {
+      .header h1 {
+        font-size: 20px;
+      }
+
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <img src="Logo.png">
+    <h1>Pateros Technological College</h1>
+  </div>
+
+  <!-- Enrollment Form -->
+  <div class="container">
+    <h2>Student Enrollment Form</h2>
+    <form action="#" method="post">
+
+      <label for="studentId">Student ID</label>
+      <input type="text" id="studentId" name="studentId" required>
+
+      <label for="fullname">Full Name</label>
+      <input type="text" id="fullname" name="fullname" required>
+
+      <label for="birthdate">Birthdate</label>
+      <input type="date" id="birthdate" name="birthdate" required>
+
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="contact">Contact Number</label>
+      <input type="tel" id="contact" name="contact" required>
+
+      <label for="address">Home Address</label>
+      <input type="text" id="address" name="address" required>
+
+      <label for="yearLevel">Year Level</label>
+      <select id="yearLevel" name="yearLevel" required>
+        <option value="">--Select Year Level--</option>
+        <option value="1st Year">1st Year</option>
+        <option value="2nd Year">2nd Year</option>
+        <option value="3rd Year">3rd Year</option>
+        <option value="4th Year">4th Year</option>
+      </select>
+
+      <label for="program">Program</label>
+      <select id="program" name="program" required>
+        <option value="">--Select Program--</option>
+        <option value="BSIT">BS Information Technology</option>
+        <option value="BSTM">BS Tourism Management</option>
+        <option value="BSED">BS Secondary Education</option>
+        <option value="TVL">Technical-Vocational-Livelihood</option>
+      </select>
+
+      <label for="semester">Semester</label>
+      <select id="semester" name="semester" required>
+        <option value="">--Select Semester--</option>
+        <option value="1st Semester">1st Semester</option>
+        <option value="2nd Semester">2nd Semester</option>
+        <option value="Summer">Summer</option>
+      </select>
+
+      <button type="submit">Submit Enrollment</button>
+
+    </form>
+  </div>
+
+</body>
+</html>
