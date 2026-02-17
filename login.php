@@ -1,51 +1,33 @@
 <?php
 session_start();
-
-include 'db_config.php';
+include "db_config.php"; //
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $studentid = $_POST['studentid'];
-    $pass = $_POST['password'];
+    $username = $_POST['username']; //
+    $password = $_POST['password']; //
 
-    // Use prepared statements to prevent SQL Injection
-    $stmt = $conn->prepare("SELECT * FROM Stud_account WHERE studentid = ? AND password = ?");
+    // Use prepared statements to find the user
+    $sql = "SELECT * FROM Stud_account WHERE username = ?";
+    $stmt = mysqli_prepare($conn, $sql);
     
-    if (!$stmt) {
-        $error = "Prepare Error: " . $conn->error;
-        echo "<script>console.error('" . addslashes($error) . "');</script>";
-        die($error);
-    }
-    
-    if (!$stmt->bind_param("ss", $studentid, $pass)) {
-        $error = "Bind Error: " . $stmt->error;
-        echo "<script>console.error('" . addslashes($error) . "');</script>";
-        die($error);
-    }
-    
-    if (!$stmt->execute()) {
-        $error = "Execute Error: " . $stmt->error;
-        echo "<script>console.error('" . addslashes($error) . "');</script>";
-        die($error);
-    }
-    
-    $result = $stmt->get_result();
-    
-    if (!$result) {
-        $error = "Get Result Error: " . $stmt->error;
-        echo "<script>console.error('" . addslashes($error) . "');</script>";
-        die($error);
-    }
+    if ($stmt) {
+        mysqli_stmt_bind_param($stmt, "s", $username);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
 
-    if ($result->num_rows > 0) {
-        // Successful login
-        $_SESSION['studentid'] = $studentid;
-        header("Location: Student_portal.html");
-        exit();
-    } else {
-        // Failed login
-        echo "<script>alert('Invalid Student ID or Password'); window.location.href='student.php';</script>";
+        if ($row = mysqli_fetch_assoc($result)) {
+            // SIMPLIFIED: Direct comparison instead of password_verify
+            if ($password === $row['password']) { 
+                $_SESSION['user'] = $row['username'];
+                header("Location: Student_portal.html"); //
+                exit();
+            } else {
+                echo "<script>alert('Invalid Password'); window.location='student.php';</script>";
+            }
+        } else {
+            echo "<script>alert('User not found'); window.location='student.php';</script>";
+        }
+        mysqli_stmt_close($stmt);
     }
-    $stmt->close();
 }
-$conn->close();
 ?>
