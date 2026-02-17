@@ -23,6 +23,7 @@
       text-align: center;
       padding: 30px 20px;
       box-sizing: border-box;
+      border-bottom: 4px solid gold;
     }
 
     .header img {
@@ -35,13 +36,6 @@
       font-size: 28px;
     }
 
-    .header p {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 500;
-      color: #f1f8e9;
-    }
-
     /* Login box */
     .login-container {
       background-color: white;
@@ -50,7 +44,7 @@
       border-radius: 10px;
       width: 90%;
       max-width: 400px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
       margin: 40px 0;
     }
 
@@ -68,10 +62,11 @@
 
     input {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin-top: 8px;
       border: 1px solid #ccc;
       border-radius: 5px;
+      box-sizing: border-box;
     }
 
     button {
@@ -84,10 +79,13 @@
       width: 100%;
       margin-top: 25px;
       font-size: 16px;
+      font-weight: bold;
+      transition: 0.3s;
     }
 
     button:hover {
       background-color: #1b5e20;
+      transform: translateY(-2px);
     }
 
     .footer {
@@ -96,40 +94,24 @@
       color: gray;
       text-align: center;
     }
-
-    @media (max-width: 600px) {
-      .header h1 {
-        font-size: 20px;
-      }
-
-      .header p {
-        font-size: 13px;
-      }
-
-      .header img {
-        height: 80px;
-      }
-    }
   </style>
 </head>
 <body>
 
-  <!-- Full Header -->
   <div class="header">
-    <img src="Logo.png">
+    <img src="Logo.png" alt="PTC Logo">
     <h1>PATEROS TECHNOLOGICAL COLLEGE</h1>
-  <p style="color: gold; font-size: 30px;">SMART ACADEMIC MANAGEMENT SYSTEM</p>
+    <p style="color: gold; font-size: 24px; font-weight: bold; margin-top: 10px;">SMART ACADEMIC MANAGEMENT SYSTEM</p>
   </div>
 
-  <!-- Login Form -->
   <div class="login-container">
     <h2>Student Login</h2>
-    <form action="Student-Portal.HTML" method="post">
-      <label for="studentId">Student ID</label>
-      <input type="text" id="studentId" name="studentId" required>
+    <form action="login.php" method="POST">
+      <label for="studentid">Student ID</label>
+      <input type="text" id="studentid" name="studentid" placeholder="Enter ID Number" required>
 
       <label for="password">Password</label>
-      <input type="password" id="password" name="password" required>
+      <input type="password" id="password" name="password" placeholder="Enter Password" required>
 
       <button type="submit">Login</button>
     </form>

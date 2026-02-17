@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Main Dashboard</title>
-
+  <title>Student Portal</title>
   <style>
     * {
       box-sizing: border-box;
@@ -16,14 +15,15 @@
       background-color: #e6ffe6;
     }
 
-    /* ===== Sidebar ===== */
+    /* Sidebar */
     .sidebar {
       height: 100vh;
       width: 250px;
       position: fixed;
-      background-color: #006400;
+      background-color: #228B22;
       color: white;
       padding-top: 20px;
+      transition: 0.3s;
     }
 
     .sidebar h2 {
@@ -40,10 +40,10 @@
     }
 
     .sidebar a:hover {
-      background-color: #3cb371;
+      background-color: #2e8b57;
     }
 
-    /* ===== Top Bar ===== */
+    /* Top Profile Bar */
     .topbar {
       margin-left: 250px;
       padding: 10px 20px;
@@ -66,11 +66,11 @@
       gap: 10px;
     }
 
-    /* ===== Main Content ===== */
+    /* Content Area */
     .content {
       margin-left: 250px;
       padding: 30px;
-      background-color: #ffffff;
+      background-color: #ccffcc;
       min-height: 100vh;
     }
 
@@ -82,7 +82,7 @@
     }
 
     .header-container img.logo {
-      width: 120px;
+      width: 60px;
       height: auto;
     }
 
@@ -93,12 +93,11 @@
     }
 
     .content p {
+      text-align: center;
       font-size: 18px;
-      margin-top: 10px;
-      text-align: left;
     }
 
-    /* ===== Responsive ===== */
+    /* Responsive */
     @media screen and (max-width: 768px) {
       .sidebar {
         width: 100%;
@@ -122,59 +121,41 @@
         align-items: center;
         text-align: center;
       }
-
-      .header-container h1 {
-        font-size: 24px;
-      }
     }
   </style>
 </head>
-
 <body>
 
-  <!-- ===== Sidebar ===== -->
+  <!-- ✅ Sidebar Navigation -->
   <div class="sidebar">
-    <h2>Main Dashboard</h2>
-
-    <!-- Newly Added -->
-    <a href="admission.html">Admission</a>
-    <a href="enrollment.html">Enrollment</a>
-    <a href="admin_login.html">Admin</a>
-    <a href="faculty.html">Faculty</a>
-    <a href="student.php">Student</a>
-    <a href= "aptitude-test.html"> Aptitude Test </a>
-    <!-- Existing -->
-    <a href="classlist.html">Class List</a>
-    <a href="grade_sheet.html">Grading Sheet</a>
-    <a href="https://www.paterostechnologicalcollege.edu.ph/">PTC Website</a>
-    <a href="logout.html">Logout</a>
+    <h2>Student Portal</h2>
+    <a href="enrollment_page.html">Enrollment </a>
+    <a href="Student_account_form.html">Student Account</a>
+    <a href="student_class_schedule.html">Class Schedule </a>
+    <a href="view_grade.html">View Grades </a>
+     
   </div>
 
-  <!-- ===== Top Bar ===== -->
+  <!-- ✅ Top Profile Bar -->
   <div class="topbar">
     <div class="profile-info">
-      <img src="profile.jpg" alt="Profile Photo" class="profile" />
+      <img src="profile.jpg" alt="Student Photo" class="profile" />
+      <div>
+        <strong>Juan Dela Cruz</strong><br>
+        ID: 2023-00001
+      </div>
     </div>
   </div>
 
-  <!-- ===== Main Content ===== -->
+  <!-- ✅ Main Content Area -->
   <div class="content">
+    <!-- ✅ Logo + Welcome Title -->
     <div class="header-container">
-      <img src="Logo.png" alt="School Logo" class="logo">
-      <h1>MAIN DASHBOARD</h1>
+      <img src="logo.png" alt="School Logo" class="logo">
+      <h1>Welcome, Juan!</h1>
     </div>
 
-    <hr style="border: 2px solid gold;">
-
-    <center>
-      <i>
-        <p>
-          This dashboard allows you to manage and monitor institutional data such as
-          admissions, enrollment, faculty, students, class lists, and grading sheets.
-          Use the menu on the left to navigate between different functions.
-        </p>
-      </i>
-    </center>
+   <align="left"> <p>Use the dashboard to view and manage your student records.</p> </align>
   </div>
 
 </body>
