@@ -1,7 +1,25 @@
 <?php
+// Database connection - Create fresh connection
+$host     = "sql302.infinityfree.com";  
+$db_user  = "if0_41171248";
+$db_pass  = "vJoJA8PL88TC";
+$db_name  = "if0_41171248_ptc_database";
+
+$conn = mysqli_connect($host, $db_user, $db_pass, $db_name);
+
+if (!$conn) {
+    error_log("Database connection failed: " . mysqli_connect_error());
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    exit;
+}
+
+// Set charset
+mysqli_set_charset($conn, "utf8mb4");
+
 // Enable error logging
 error_log("=== Admission Email Script Started ===");
 error_log("POST Data: Email=" . (isset($_POST['email']) ? $_POST['email'] : 'NONE'));
+error_log("DB Connection: SUCCESS");
 
 // Email configuration
 $senderEmail = 'arquero.sofia.tcu@gmail.com';
@@ -12,6 +30,10 @@ $senderName = 'PTC Admissions';
 $recipientEmail = isset($_POST['email']) ? trim($_POST['email']) : '';
 $firstName = isset($_POST['firstName']) ? trim($_POST['firstName']) : '';
 $lastName = isset($_POST['lastName']) ? trim($_POST['lastName']) : '';
+$middleName = isset($_POST['middleName']) ? trim($_POST['middleName']) : '';
+$address = isset($_POST['address']) ? trim($_POST['address']) : '';
+$contactNumber = isset($_POST['contact']) ? trim($_POST['contact']) : '';
+$program = isset($_POST['program']) ? trim($_POST['program']) : '';
 $admissionId = isset($_POST['admissionId']) ? trim($_POST['admissionId']) : '';
 $pdfData = isset($_POST['pdfData']) ? $_POST['pdfData'] : '';
 
@@ -32,7 +54,8 @@ if (!filter_var($recipientEmail, FILTER_VALIDATE_EMAIL)) {
 }
 
 // Log admission information to database
-logAdmissionToDatabase($firstName, $lastName, $recipientEmail, $admissionId);
+$dbResult = logAdmissionToDatabase($conn, $firstName, $middleName, $lastName, $address, $contactNumber, $program, $recipientEmail, $admissionId);
+error_log("Database save result: " . ($dbResult ? "SUCCESS" : "FAILED"));
 
 // Try to send email using multiple methods
 $emailSent = false;
@@ -261,27 +284,67 @@ function getEmailTemplate($firstName, $lastName, $admissionId, $examConfig = [])
     ";
 }
 
-function logAdmissionToDatabase($firstName, $lastName, $email, $admissionId) {
+function logAdmissionToDatabase($conn, $givenName, $middleName, $lastName, $address, $contactNumber, $program, $email, $admissionId) {
+    
+    error_log("=== logAdmissionToDatabase START ===");
+    error_log("Parameters - Name: $givenName $middleName $lastName, Email: $email, ID: $admissionId, Program: $program");
+    
     try {
-        if (file_exists(__DIR__ . '/../config/db_config.php')) {
-            require_once __DIR__ . '/../config/db_config.php';
-            
-            if (!$conn) {
-                return;
-            }
-            
-            $stmt = $conn->prepare("INSERT INTO admissions (first_name, last_name, email, admission_id, submission_date) VALUES (?, ?, ?, ?, NOW())");
-            
-            if ($stmt) {
-                $stmt->bind_param("ssss", $firstName, $lastName, $email, $admissionId);
-                $stmt->execute();
-                $stmt->close();
-            }
-            
-            $conn->close();
+        // Verify connection exists
+        if (!$conn) {
+            error_log("FATAL: Database connection not available");
+            return false;
         }
+        
+        error_log("Database connection verified successfully");
+        
+        // Create full name
+        $fullName = trim($givenName . ' ' . $middleName . ' ' . $lastName);
+        
+        // Prepare SQL statement with correct column names from database schema
+        $sql = "INSERT INTO admissions (given_name, middle_name, last_name, full_name, address, contact_number, email, program, admission_id, submission_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+        error_log("Preparing SQL: $sql");
+        
+        $stmt = $conn->prepare($sql);
+        
+        if (!$stmt) {
+            error_log("FATAL: Statement preparation failed - " . $conn->error);
+            return false;
+        }
+        
+        error_log("Statement prepared successfully");
+        
+        // Bind parameters (9 parameters for 9 fields - no submission_date as it uses NOW())
+        if (!$stmt->bind_param("sssssssss", $givenName, $middleName, $lastName, $fullName, $address, $contactNumber, $email, $program, $admissionId)) {
+            error_log("FATAL: Parameter binding failed - " . $stmt->error);
+            $stmt->close();
+            return false;
+        }
+        error_log("Parameters bound successfully");
+        
+        // Execute statement
+        $result = $stmt->execute();
+        
+        if ($result) {
+            $insertId = $stmt->insert_id;
+            error_log("SUCCESS: Admission recorded - ID: $admissionId, Email: $email, Name: $fullName, DB Insert ID: $insertId");
+            $stmt->close();
+            return true;
+        } else {
+            error_log("FATAL: Statement execution failed - " . $stmt->error);
+            $stmt->close();
+            return false;
+        }
+        
     } catch (\Exception $e) {
-        // Silently fail
+        error_log("EXCEPTION in logAdmissionToDatabase: " . $e->getMessage());
+        error_log("Exception trace: " . $e->getTraceAsString());
+        return false;
     }
+}
+
+// Close database connection
+if ($conn) {
+    $conn->close();
 }
 ?>

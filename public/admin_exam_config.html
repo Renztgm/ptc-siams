@@ -415,7 +415,7 @@
             <h2>📧 Send Exam Links to Students</h2>
 
             <div class="info-box">
-                <strong>ℹ️ How to use:</strong> Load the list of students, select who should receive the exam link, and send emails in bulk. A progress tracker will show the status of each email.
+                <strong>ℹ️ How to use:</strong> Load the list of students, select who should receive the exam link, and send emails in bulk. A progress tracker will show the status of each email. <a href="#" onclick="testAPIConnection(event)" style="color: #2196F3; text-decoration: underline; cursor: pointer;">Test Connection</a>
             </div>
 
             <div class="form-section">
@@ -498,6 +498,8 @@
                 </div>
 
                 <button class="btn-send" onclick="sendEmailsToBulk()" style="width: 100%; margin-top: 15px;">📤 Send Exam Links to Selected Students</button>
+                
+                <button class="btn-load" onclick="testScheduledEmails()" style="width: 100%; margin-top: 10px; background-color: #FFC107; color: black; border-color: #FFC107;">🔧 Test Scheduled Emails & Diagnostics</button>
 
                 <div id="progress-container" style="display: none; margin-top: 20px;">
                     <div class="progress-bar">
@@ -521,13 +523,39 @@
         window.addEventListener('load', () => {
             loadConfig();
             loadProgramsDropdown();
+            // Auto-trigger email scheduler in background
+            triggerEmailScheduler();
+            // Check scheduler every 5 minutes
+            setInterval(triggerEmailScheduler, 5 * 60 * 1000);
         });
+
+        // Trigger the email scheduler in background (no user notification)
+        function triggerEmailScheduler() {
+            fetch('../api/run_scheduler.php', {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.processed_batches && data.processed_batches > 0) {
+                    console.log('📧 Scheduler: ' + data.message);
+                    // Reload students list to update email sent status
+                    if (students.length > 0) {
+                        loadStudents();
+                    }
+                } else {
+                    console.log('⏰ Scheduler: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.log('Scheduler check error (non-critical):', error);
+            });
+        }
 
         function showMessage(message, type = 'success') {
             const container = document.getElementById('alert-container');
             const alert = document.createElement('div');
             alert.className = `alert ${type}`;
-            alert.textContent = message;
+            alert.innerHTML = message;
             alert.style.display = 'block';
             container.innerHTML = '';
             container.appendChild(alert);
@@ -535,8 +563,11 @@
             if (type === 'success') {
                 setTimeout(() => {
                     alert.style.display = 'none';
-                }, 4000);
+                }, 5000);
             }
+
+            // Log to console as well
+            console.log(`[${type.toUpperCase()}] ${message}`);
         }
 
         function loadConfig() {
@@ -676,10 +707,26 @@
             const url = '../api/get_admitted_students.php' + (program ? '?program=' + encodeURIComponent(program) : '');
 
             try {
+                console.log('Fetching from:', url);
                 const response = await fetch(url);
-                const data = await response.json();
+                
+                // Check HTTP response status
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+                }
+                
+                let data;
+                const contentType = response.headers.get('content-type');
+                
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    throw new Error(`Invalid response type. Expected JSON, got: ${contentType || 'unknown'}`);
+                }
 
-                if (data.success) {
+                console.log('Response data:', data);
+
+                if (data.success && data.students && data.students.length > 0) {
                     students = data.students || [];
                     selectedStudents = [];
                     renderStudentsList();
@@ -692,13 +739,66 @@
                     document.getElementById('sent-count').textContent = sent;
                     updateSelectedCount();
 
-                    showMessage(`Loaded ${students.length} students`, 'success');
+                    showMessage(`✓ Loaded ${students.length} students`, 'success');
+                } else if (data.success && (!data.students || data.students.length === 0)) {
+                    students = [];
+                    selectedStudents = [];
+                    renderStudentsList();
+                    document.getElementById('stats-container').style.display = 'grid';
+                    document.getElementById('select-buttons').style.display = 'flex';
+                    document.getElementById('students-list').style.display = 'block';
+                    document.getElementById('total-count').textContent = '0';
+                    document.getElementById('sent-count').textContent = '0';
+                    updateSelectedCount();
+                    const filterText = program ? ` for program "${program}"` : '';
+                    showMessage(`⚠️ No students found${filterText}. Make sure there are admitted students in the system.`, 'error');
                 } else {
-                    showMessage(data.message || 'Failed to load students', 'error');
+                    const errorMsg = data.message || 'Unknown error occurred';
+                    console.error('API Error:', data);
+                    showMessage(`❌ Failed to load students: ${errorMsg}`, 'error');
                 }
             } catch (error) {
-                console.error('Error:', error);
-                showMessage('Error loading students: ' + error.message, 'error');
+                console.error('Fetch Error:', error);
+                showMessage(`❌ Error loading students: ${error.message}. Check browser console for details.`, 'error');
+            }
+        }
+
+        async function testAPIConnection(event) {
+            event.preventDefault();
+            showMessage('🔍 Testing API connection...', 'info');
+
+            try {
+                console.log('Testing API endpoint: ../api/get_admitted_students.php');
+                const response = await fetch('../api/get_admitted_students.php');
+                
+                console.log('Response status:', response.status, response.statusText);
+                console.log('Response headers:', Object.fromEntries(response.headers));
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const contentType = response.headers.get('content-type');
+                console.log('Content-Type:', contentType);
+                
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('Response is not JSON:', text.substring(0, 500));
+                    throw new Error(`Expected JSON, got ${contentType || 'unknown'}. Response: ${text.substring(0, 200)}`);
+                }
+                
+                const data = await response.json();
+                console.log('Response JSON:', data);
+                
+                if (data.success) {
+                    const studentCount = data.students ? data.students.length : 0;
+                    showMessage(`✓ API Connection working! Found ${studentCount} students in database.`, 'success');
+                } else {
+                    showMessage(`⚠️ API Error: ${data.message || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                console.error('Connection test failed:', error);
+                showMessage(`❌ Connection test failed: ${error.message}<br><small>Open browser console (F12) for more details</small>`, 'error');
             }
         }
 
@@ -849,6 +949,65 @@
                 document.getElementById('scheduleDate').min = tomorrow.toISOString().split('T')[0];
             } else {
                 fields.style.display = 'none';
+            }
+        }
+
+        async function testScheduledEmails() {
+            showMessage('🔍 Testing scheduled emails system...', 'info');
+
+            try {
+                // First get diagnostics
+                const diagResponse = await fetch('../api/test_scheduled_emails.php');
+                const diagnostics = await diagResponse.json();
+
+                if (!diagnostics.success) {
+                    showMessage(`❌ Diagnostic failed: ${diagnostics.message}`, 'error');
+                    return;
+                }
+
+                // Build detailed report
+                let reportHtml = `<strong>📊 Scheduled Emails Diagnostic Report</strong><br><br>`;
+                
+                reportHtml += `<strong>System Status:</strong><br>`;
+                reportHtml += `• Database Connected: ${diagnostics.diagnostics.database_connected ? '✓ Yes' : '❌ No'}<br>`;
+                reportHtml += `• Scheduled Directory: ${diagnostics.diagnostics.scheduled_dir_exists ? '✓ Exists' : '⚠️ Created / Not Found'}<br>`;
+                reportHtml += `• Total Students in System: ${diagnostics.diagnostics.total_students || 0}<br><br>`;
+
+                reportHtml += `<strong>Scheduled Emails:</strong><br>`;
+                reportHtml += `• Pending Batches: ${diagnostics.diagnostics.scheduled_files_count}<br>`;
+
+                if (diagnostics.diagnostics.scheduled_files.length > 0) {
+                    reportHtml += `<br><strong>Batch Details:</strong><br>`;
+                    diagnostics.diagnostics.scheduled_files.forEach(file => {
+                        reportHtml += `<br>📧 ${file.batch_id}<br>`;
+                        reportHtml += `&nbsp;&nbsp;Status: ${file.status}<br>`;
+                        reportHtml += `&nbsp;&nbsp;Scheduled: ${file.scheduled_for}<br>`;
+                        reportHtml += `&nbsp;&nbsp;Time Remaining: ${file.time_remaining_seconds}s<br>`;
+                        reportHtml += `&nbsp;&nbsp;Emails: ${file.email_count}<br>`;
+                        reportHtml += `&nbsp;&nbsp;Ready to Send: ${file.should_send ? '✓ YES' : '⏳ Not yet'}<br>`;
+                    });
+                } else {
+                    reportHtml += `<br>No scheduled email batches found.<br>`;
+                }
+
+                // Now run the scheduler
+                reportHtml += `<br><strong>Running Scheduler...</strong><br>`;
+                const schedulerResponse = await fetch('../api/run_scheduler.php');
+                const schedulerResult = await schedulerResponse.json();
+
+                reportHtml += `✓ Scheduler executed<br>`;
+                reportHtml += `• Batches Processed: ${schedulerResult.processed_batches}<br>`;
+                reportHtml += `• Emails Sent: ${schedulerResult.sent}<br>`;
+                reportHtml += `• Failed: ${schedulerResult.failed}<br>`;
+                reportHtml += `• Message: ${schedulerResult.message}<br>`;
+
+                showMessage(reportHtml, 'success');
+                console.log('Full diagnostics:', diagnostics);
+                console.log('Scheduler result:', schedulerResult);
+
+            } catch (error) {
+                console.error('Test error:', error);
+                showMessage(`❌ Test failed: ${error.message}<br><small>Check browser console for details</small>`, 'error');
             }
         }
     </script>

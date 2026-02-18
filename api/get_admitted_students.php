@@ -12,17 +12,16 @@ try {
     
     // Get filter parameters
     $program = isset($_GET['program']) ? trim($_GET['program']) : '';
-    $status = isset($_GET['status']) ? trim($_GET['status']) : 'admitted';
     
-    // Build query - only get admitted students by default
+    // Build query - get both pending and admitted students
     $query = "SELECT id, admission_id, given_name, last_name, middle_name,
                      CONCAT(given_name, ' ', last_name) as full_name,
                      email, program, exam_link_sent, email_sent_date
               FROM admissions
-              WHERE status = ?";
+              WHERE status IN ('pending', 'admitted')";
     
-    $params = [$status];
-    $types = 's';
+    $params = [];
+    $types = '';
     
     // Add program filter if specified
     if (!empty($program)) {

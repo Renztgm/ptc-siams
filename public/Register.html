@@ -266,17 +266,21 @@ function processAdmissionSubmission(examConfig) {
         doc.save(fileName);
 
         // Send email with PDF and exam config
-        sendEmailWithPDF(email, fileName, givenName, lastName, admissionId, pdfData, examConfig);
+        sendEmailWithPDF(email, fileName, givenName, middleName, lastName, address, contact, program, admissionId, pdfData, examConfig);
 
     }, 500);
 }
 
-function sendEmailWithPDF(email, fileName, givenName, lastName, admissionId, pdfData, examConfig) {
+function sendEmailWithPDF(email, fileName, givenName, middleName, lastName, address, contact, program, admissionId, pdfData, examConfig) {
     // Prepare form data
     const formData = new FormData();
     formData.append('email', email);
     formData.append('firstName', givenName);
+    formData.append('middleName', middleName);
     formData.append('lastName', lastName);
+    formData.append('address', address);
+    formData.append('contact', contact);
+    formData.append('program', program);
     formData.append('admissionId', admissionId);
     formData.append('pdfData', pdfData);
     formData.append('examConfig', JSON.stringify(examConfig));
