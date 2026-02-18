@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTC Exam Configuration - Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #2e7d32;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #2e7d32;
+            padding-bottom: 15px;
+        }
+
+        h1 {
+            color: #2e7d32;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            color: #2e7d32;
+            font-size: 20px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #2e7d32;
+            padding-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-left: 4px solid #2e7d32;
+            border-radius: 5px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2e7d32;
+            background-color: #f0f8f0;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-save {
+            background-color: #2e7d32;
+            color: white;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-save:hover {
+            background-color: #1b5e20;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(46, 125, 50, 0.3);
+        }
+
+        .btn-send {
+            background-color: #ff6b35;
+            color: white;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-send:hover {
+            background-color: #e55a2b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-load {
+            background-color: #fff;
+            color: #2e7d32;
+            border: 2px solid #2e7d32;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-load:hover {
+            background-color: #f0f8f0;
+        }
+
+        .btn-select {
+            background-color: #2196F3;
+            color: white;
+            padding: 8px 15px;
+            font-size: 14px;
+            min-width: auto;
+        }
+
+        .btn-select:hover {
+            background-color: #1976D2;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .alert.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            color: #1565c0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .students-list {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .student-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .student-item:last-child {
+            border-bottom: none;
+        }
+
+        .student-item input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .student-info {
+            flex: 1;
+            font-size: 13px;
+        }
+
+        .student-info strong {
+            color: #2e7d32;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #2e7d32;
+            transition: width 0.3s;
+            text-align: center;
+            color: white;
+            font-size: 12px;
+            line-height: 20px;
+        }
+
+        .current-values {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        .current-values strong {
+            color: #2e7d32;
+        }
+
+        .preview {
+            background: #fffacd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border: 1px solid #daa520;
+            font-size: 13px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #2e7d32;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .row {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>📋 PTC Exam Administration Panel</h1>
+            <p class="subtitle">Manage exam schedule, details, and student communications</p>
+        </header>
+
+        <div id="alert-container"></div>
+
+        <!-- SECTION 1: EXAM CONFIGURATION -->
+        <div class="panel">
+            <h2>📅 Exam Schedule & Details</h2>
+
+            <div class="info-box">
+                ⚠️ <strong>Important:</strong> These settings will be used in admission forms and confirmation emails. Make sure to verify all details are correct.
+            </div>
+
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="examDate">Exam Date:</label>
+                    <input type="date" id="examDate" required>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label>Start Time:</label>
+                        <input type="time" id="examTimeStart" required>
+                    </div>
+                    <div class="form-group">
+                        <label>End Time:</label>
+                        <input type="time" id="examTimeEnd" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label for="examFormat">Exam Format:</label>
+                        <select id="examFormat" required>
+                            <option value="">-- Select Format --</option>
+                            <option value="Online">Online</option>
+                            <option value="In-Person">In-Person</option>
+                            <option value="Hybrid">Hybrid</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="examLocation">Location:</label>
+                        <input type="text" id="examLocation" placeholder="e.g., PTC Grounds, Online, etc." required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="examLink">Exam Link / Meeting URL:</label>
+                    <input type="text" id="examLink" placeholder="https://example.com/exam or [To be provided via email]" required>
+                    <small>Leave as placeholder if not ready yet</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="examDescription">Description / Instructions:</label>
+                    <textarea id="examDescription" placeholder="Additional instructions or notes..."></textarea>
+                </div>
+
+                <div class="current-values" id="current-values" style="display: none;"></div>
+            </div>
+
+            <h3>Email Preview</h3>
+            <div class="preview" id="email-preview"></div>
+
+            <div class="button-group">
+                <button class="btn-load" onclick="loadConfig()">📥 Load Current Settings</button>
+                <button class="btn-save" onclick="saveConfig()">💾 Save Configuration</button>
+            </div>
+        </div>
+
+        <!-- SECTION 2: BULK EMAIL SENDING -->
+        <div class="panel">
+            <h2>📧 Send Exam Links to Students</h2>
+
+            <div class="info-box">
+                <strong>ℹ️ How to use:</strong> Load the list of students, select who should receive the exam link, and send emails in bulk. A progress tracker will show the status of each email.
+            </div>
+
+            <div class="form-section">
+                <div class="section-title">Filter & Student Selection</div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label for="filterProgram">Filter by Program:</label>
+                        <select id="filterProgram">
+                            <option value="">Loading programs...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button class="btn-load" onclick="loadStudents()" style="width: 100%; margin-top: 0;">🔄 Load Students</button>
+                    </div>
+                </div>
+
+                <div class="stats" id="stats-container" style="display: none;">
+                    <div class="stat-box">
+                        <div class="stat-number" id="total-count">0</div>
+                        <div class="stat-label">Total Students</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="selected-count">0</div>
+                        <div class="stat-label">Selected</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="sent-count">0</div>
+                        <div class="stat-label">Already Sent</div>
+                    </div>
+                </div>
+
+                <div class="select-actions" id="select-buttons" style="display: none;">
+                    <button class="btn-select" onclick="selectAllStudents()">✓ Select All</button>
+                    <button class="btn-select" onclick="deselectAllStudents()">✗ Deselect All</button>
+                </div>
+
+                <div class="students-list" id="students-list" style="display: none;"></div>
+            </div>
+
+            <div class="form-section">
+                <div class="section-title">Send Configuration</div>
+
+                <div class="form-group">
+                    <label for="adminPassword">Admin Password:</label>
+                    <input type="password" id="adminPassword" placeholder="Enter admin password to authorize sending">
+                    <small>Required to prevent unauthorized email sending</small>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label>
+                            <input type="radio" name="sendMode" value="now" checked onchange="toggleScheduleFields()"> 
+                            Send Now
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="radio" name="sendMode" value="scheduled" onchange="toggleScheduleFields()"> 
+                            Schedule for Later
+                        </label>
+                    </div>
+                </div>
+
+                <div id="schedule-fields" style="display: none;">
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="scheduleDate">Send Date:</label>
+                            <input type="date" id="scheduleDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="scheduleTime">Send Time:</label>
+                            <input type="time" id="scheduleTime">
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        ℹ️ Email will be automatically sent at the scheduled date and time. Server must be running or have a scheduler configured.
+                    </div>
+                </div>
+
+                <button class="btn-send" onclick="sendEmailsToBulk()" style="width: 100%; margin-top: 15px;">📤 Send Exam Links to Selected Students</button>
+
+                <div id="progress-container" style="display: none; margin-top: 20px;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 0%;">
+                            <span id="progress-text">0%</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 13px; color: #666;">
+                        <span id="progress-status">Preparing to send emails...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // EXAM CONFIGURATION SECTION
+        // ============================================
+
+        window.addEventListener('load', () => {
+            loadConfig();
+            loadProgramsDropdown();
+        });
+
+        function showMessage(message, type = 'success') {
+            const container = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert ${type}`;
+            alert.textContent = message;
+            alert.style.display = 'block';
+            container.innerHTML = '';
+            container.appendChild(alert);
+
+            if (type === 'success') {
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 4000);
+            }
+        }
+
+        function loadConfig() {
+            fetch('../api/exam_config.php?json')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('examDate').value = data.exam_date;
+                    document.getElementById('examTimeStart').value = data.exam_start_time;
+                    document.getElementById('examTimeEnd').value = data.exam_end_time;
+                    document.getElementById('examFormat').value = data.exam_format;
+                    document.getElementById('examLocation').value = data.exam_location;
+                    document.getElementById('examLink').value = data.exam_link;
+                    document.getElementById('examDescription').value = data.exam_link_description || '';
+
+                    updateEmailPreview();
+                    showMessage('Settings loaded successfully', 'success');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('Error loading settings: ' + error.message, 'error');
+                });
+        }
+
+        function saveConfig() {
+            const password = prompt('Enter admin password to save changes:');
+            if (!password) return;
+
+            const formData = new FormData();
+            formData.append('action', 'update');
+            formData.append('exam_date', document.getElementById('examDate').value);
+            formData.append('exam_start_time', document.getElementById('examTimeStart').value);
+            formData.append('exam_end_time', document.getElementById('examTimeEnd').value);
+            formData.append('exam_format', document.getElementById('examFormat').value);
+            formData.append('exam_location', document.getElementById('examLocation').value);
+            formData.append('exam_link', document.getElementById('examLink').value);
+            formData.append('exam_link_description', document.getElementById('examDescription').value);
+            formData.append('password', password);
+
+            fetch('../api/exam_config.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('Configuration saved successfully!', 'success');
+                    setTimeout(() => loadConfig(), 500);
+                } else {
+                    showMessage(data.message || 'Failed to save configuration', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('Error saving configuration', 'error');
+            });
+        }
+
+        // Update email preview
+        document.getElementById('examDate').addEventListener('change', updateEmailPreview);
+        document.getElementById('examTimeStart').addEventListener('change', updateEmailPreview);
+        document.getElementById('examTimeEnd').addEventListener('change', updateEmailPreview);
+        document.getElementById('examFormat').addEventListener('change', updateEmailPreview);
+        document.getElementById('examLocation').addEventListener('change', updateEmailPreview);
+        document.getElementById('examLink').addEventListener('change', updateEmailPreview);
+        document.getElementById('examDescription').addEventListener('input', updateEmailPreview);
+
+        function updateEmailPreview() {
+            const date = document.getElementById('examDate').value;
+            const startTime = document.getElementById('examTimeStart').value;
+            const endTime = document.getElementById('examTimeEnd').value;
+            const format = document.getElementById('examFormat').value;
+            const location = document.getElementById('examLocation').value;
+            const link = document.getElementById('examLink').value;
+            const desc = document.getElementById('examDescription').value;
+
+            let preview = `<strong>Exam Details:</strong><br>`;
+            preview += `📅 Date: ${date || '[Not set]'}<br>`;
+            preview += `🕐 Time: ${startTime || '[Not set]'} - ${endTime || '[Not set]'}<br>`;
+            preview += `📍 Format: ${format || '[Not set]'}<br>`;
+            preview += `🏢 Location: ${location || '[Not set]'}<br>`;
+            preview += `🔗 Exam Link: ${escapeHtml(link) || '[Not set]'}<br>`;
+            if (desc) {
+                preview += `ℹ️ Note: ${escapeHtml(desc)}`;
+            }
+
+            document.getElementById('email-preview').innerHTML = preview;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Load programs from database
+        function loadProgramsDropdown() {
+            fetch('../api/get_programs.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.programs.length > 0) {
+                        const select = document.getElementById('filterProgram');
+                        select.innerHTML = '<option value="">-- All Programs --</option>' +
+                            data.programs.map(prog => 
+                                `<option value="${escapeHtml(prog.program_name)}">${escapeHtml(prog.program_name)}</option>`
+                            ).join('');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading programs:', error);
+                    // Fallback to default programs
+                    document.getElementById('filterProgram').innerHTML = `
+                        <option value="">-- All Programs --</option>
+                        <option value="BS Information Technology">BS Information Technology</option>
+                        <option value="BS Business Administration">BS Business Administration</option>
+                        <option value="BS Hospitality Management">BS Hospitality Management</option>
+                        <option value="BS Nursing">BS Nursing</option>
+                        <option value="BS Criminology">BS Criminology</option>
+                        <option value="Associate in Hotel and Restaurant Management">Associate in Hotel and Restaurant Management</option>
+                        <option value="Associate in Office Administration">Associate in Office Administration</option>
+                        <option value="Associate in Education">Associate in Education</option>
+                    `;
+                });
+        }
+
+
+        // ============================================
+        // BULK EMAIL SENDING SECTION
+        // ============================================
+
+        let students = [];
+        let selectedStudents = [];
+
+        async function loadStudents() {
+            const program = document.getElementById('filterProgram').value;
+            showMessage('Loading students...', 'info');
+
+            const url = '../api/get_admitted_students.php' + (program ? '?program=' + encodeURIComponent(program) : '');
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.success) {
+                    students = data.students || [];
+                    selectedStudents = [];
+                    renderStudentsList();
+                    document.getElementById('stats-container').style.display = 'grid';
+                    document.getElementById('select-buttons').style.display = 'flex';
+                    document.getElementById('students-list').style.display = 'block';
+
+                    const sent = students.filter(s => s.exam_link_sent).length;
+                    document.getElementById('total-count').textContent = students.length;
+                    document.getElementById('sent-count').textContent = sent;
+                    updateSelectedCount();
+
+                    showMessage(`Loaded ${students.length} students`, 'success');
+                } else {
+                    showMessage(data.message || 'Failed to load students', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Error loading students: ' + error.message, 'error');
+            }
+        }
+
+        function renderStudentsList() {
+            const container = document.getElementById('students-list');
+            container.innerHTML = '';
+
+            students.forEach((student, index) => {
+                const div = document.createElement('div');
+                div.className = 'student-item';
+
+                const isSelected = selectedStudents.includes(index);
+                const isSent = student.exam_link_sent;
+
+                div.innerHTML = `
+                    <input type="checkbox" ${isSelected ? 'checked' : ''} 
+                           ${isSent ? 'disabled' : ''} 
+                           onchange="toggleStudentSelection(${index})"
+                           title="${isSent ? 'Email already sent to this student' : ''}">
+                    <div class="student-info">
+                        <strong>${escapeHtml(student.full_name || student.given_name + ' ' + student.last_name)}</strong><br>
+                        <span>${escapeHtml(student.email)}</span><br>
+                        <span class="program">${escapeHtml(student.program)}</span>
+                        ${isSent ? '<span style="color: #4CAF50; font-weight: bold;">✓ Email Sent</span>' : ''}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleStudentSelection(index) {
+            if (selectedStudents.includes(index)) {
+                selectedStudents = selectedStudents.filter(i => i !== index);
+            } else {
+                selectedStudents.push(index);
+            }
+            updateSelectedCount();
+        }
+
+        function selectAllStudents() {
+            selectedStudents = students
+                .map((s, i) => !s.exam_link_sent ? i : -1)
+                .filter(i => i !== -1);
+            renderStudentsList();
+            updateSelectedCount();
+        }
+
+        function deselectAllStudents() {
+            selectedStudents = [];
+            renderStudentsList();
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            document.getElementById('selected-count').textContent = selectedStudents.length;
+        }
+
+        async function sendEmailsToBulk() {
+            if (selectedStudents.length === 0) {
+                showMessage('Please select at least one student', 'error');
+                return;
+            }
+
+            const password = document.getElementById('adminPassword').value;
+            if (!password) {
+                showMessage('Please enter admin password', 'error');
+                return;
+            }
+
+            const emails = selectedStudents.map(i => students[i].email);
+            const sendMode = document.querySelector('input[name="sendMode"]:checked').value;
+            let scheduleDate = null;
+            let scheduleTime = null;
+
+            if (sendMode === 'scheduled') {
+                scheduleDate = document.getElementById('scheduleDate').value;
+                scheduleTime = document.getElementById('scheduleTime').value;
+
+                if (!scheduleDate || !scheduleTime) {
+                    showMessage('Please select a date and time for scheduled sending', 'error');
+                    return;
+                }
+
+                // Validate that scheduled time is in the future
+                const scheduledDateTime = new Date(scheduleDate + 'T' + scheduleTime);
+                if (scheduledDateTime <= new Date()) {
+                    showMessage('Scheduled time must be in the future', 'error');
+                    return;
+                }
+            }
+
+            document.getElementById('progress-container').style.display = 'block';
+
+            try {
+                const formData = new FormData();
+                formData.append('action', sendMode === 'now' ? 'send_emails' : 'schedule_emails');
+                formData.append('emails', JSON.stringify(emails));
+                formData.append('password', password);
+                
+                if (sendMode === 'scheduled') {
+                    formData.append('schedule_date', scheduleDate);
+                    formData.append('schedule_time', scheduleTime);
+                }
+
+                const response = await fetch('../api/send_exam_link_bulk.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (sendMode === 'now') {
+                        // Update sent count and reload students
+                        setTimeout(() => {
+                            loadStudents();
+                            document.getElementById('progress-container').style.display = 'none';
+                            showMessage(`✓ Successfully sent ${data.sent} emails!`, 'success');
+                        }, 1000);
+                    } else {
+                        document.getElementById('progress-container').style.display = 'none';
+                        const dateStr = new Date(scheduleDate + 'T' + scheduleTime).toLocaleString();
+                        showMessage(`✓ ${emails.length} emails scheduled for ${dateStr}`, 'success');
+                        // Clear the schedule fields
+                        document.getElementById('adminPassword').value = '';
+                        document.getElementById('scheduleDate').value = '';
+                        document.getElementById('scheduleTime').value = '';
+                    }
+                } else {
+                    document.getElementById('progress-container').style.display = 'none';
+                    showMessage(data.message || 'Failed to process request', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('progress-container').style.display = 'none';
+                showMessage('Error processing request: ' + error.message, 'error');
+            }
+        }
+
+        function toggleScheduleFields() {
+            const mode = document.querySelector('input[name="sendMode"]:checked').value;
+            const fields = document.getElementById('schedule-fields');
+            if (mode === 'scheduled') {
+                fields.style.display = 'block';
+                // Set minimum date to tomorrow
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                document.getElementById('scheduleDate').min = tomorrow.toISOString().split('T')[0];
+            } else {
+                fields.style.display = 'none';
+            }
+        }
+    </script>
+
+</body>
+</html>

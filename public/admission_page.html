@@ -1,22 +1,23 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PTC Enrollment Form</title>
+  <title>PTC Admission Page</title>
   <style>
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
       background-color: #2e7d32;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
       color: white;
     }
 
     .header {
       display: flex;
       align-items: center;
-      padding: 20px 30px;
       background-color: #1b5e20;
+      padding: 20px;
       gap: 15px;
     }
 
@@ -31,7 +32,7 @@
 
     .container {
       max-width: 600px;
-      background-color: white;
+      background: white;
       color: black;
       margin: 40px auto;
       padding: 30px;
@@ -72,40 +73,24 @@
     button:hover {
       background-color: #1b5e20;
     }
-
-    @media (max-width: 600px) {
-      .header h1 {
-        font-size: 20px;
-      }
-
-      .container {
-        margin: 20px;
-        padding: 20px;
-      }
-    }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
   <div class="header">
-    <img src="Logo.png">
+    <img src="assets/Logo.png">
     <h1>Pateros Technological College</h1>
   </div>
 
-  <!-- Enrollment Form -->
   <div class="container">
-    <h2>Student Enrollment Form</h2>
-    <form action="#" method="post">
-
-      <label for="studentId">Student ID</label>
-      <input type="text" id="studentId" name="studentId" required>
+    <h2>Admission Form</h2>
+    <form action="admission.php" method="post">
 
       <label for="fullname">Full Name</label>
       <input type="text" id="fullname" name="fullname" required>
 
-      <label for="birthdate">Birthdate</label>
-      <input type="date" id="birthdate" name="birthdate" required>
+      <label for="address">Address</label>
+      <input type="text" id="address" name="address" required>
 
       <label for="email">Email Address</label>
       <input type="email" id="email" name="email" required>
@@ -113,17 +98,14 @@
       <label for="contact">Contact Number</label>
       <input type="tel" id="contact" name="contact" required>
 
-      <label for="address">Home Address</label>
-      <input type="text" id="address" name="address" required>
-
-      <label for="yearLevel">Year Level</label>
+      <!-- <label for="yearLevel">Year Level</label>
       <select id="yearLevel" name="yearLevel" required>
         <option value="">--Select Year Level--</option>
         <option value="1st Year">1st Year</option>
         <option value="2nd Year">2nd Year</option>
         <option value="3rd Year">3rd Year</option>
         <option value="4th Year">4th Year</option>
-      </select>
+      </select> -->
 
       <label for="program">Program</label>
       <select id="program" name="program" required>
@@ -134,15 +116,7 @@
         <option value="TVL">Technical-Vocational-Livelihood</option>
       </select>
 
-      <label for="semester">Semester</label>
-      <select id="semester" name="semester" required>
-        <option value="">--Select Semester--</option>
-        <option value="1st Semester">1st Semester</option>
-        <option value="2nd Semester">2nd Semester</option>
-        <option value="Summer">Summer</option>
-      </select>
-
-      <button type="submit">Submit Enrollment</button>
+      <button type="submit">Submit Application</button>
 
     </form>
   </div>

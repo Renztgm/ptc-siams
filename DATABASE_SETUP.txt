@@ -1,0 +1,309 @@
+DATABASE SETUP GUIDE FOR PTC ADMISSION SYSTEM
+==============================================
+
+OVERVIEW
+--------
+
+The system uses a MySQL/MariaDB database with 7 main tables:
+
+1. admissions - Store student applications
+2. exam_sessions - Define exam dates and schedules  
+3. exam_registrations - Track which students take which exams
+4. email_logs - Log all emails sent
+5. admission_stats - Quick stats and analytics
+6. system_logs - Audit trail of admin actions
+7. programs - List of available programs
+
+---
+SETUP INSTRUCTIONS
+------------------
+
+STEP 1: RUN THE SQL SCRIPT
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Option A: Using PhpMyAdmin (InfinityFree/Web hosting)
+-----------------------------------------------------
+1. Go to your hosting control panel
+2. Click "PhpMyAdmin"
+3. Select your database
+4. Click "Import" tab
+5. Upload PTC_Database.sql
+6. Click "Go" to execute
+
+Option B: Using Command Line (Local XAMPP)
+-------------------------------------------
+1. Open Command Prompt
+2. Navigate to MySQL bin folder:
+   cd "C:\xampp\mysql\bin"
+
+3. Run the SQL script:
+   mysql -u root -p < "e:\arquero_sofia\index\PTC_Database.sql"
+   
+   (Enter password when prompted, default is blank for XAMPP)
+
+Option C: Using PhpMyAdmin (Local XAMPP)
+----------------------------------------
+1. Open PhpMyAdmin: http://localhost/phpmyadmin
+2. Click "Import" tab
+3. Select PTC_Database.sql file
+4. Click "Go"
+
+---
+TABLE DESCRIPTIONS
+-------------------
+
+1. ADMISSIONS TABLE
+   Stores all student application data
+   
+   Key Columns:
+   - admission_id: Unique ID like "PTC-20260218-XXXX"
+   - given_name, last_name: Student name
+   - email: Student email
+   - program: Program applied for
+   - status: pending, admitted, rejected, registered
+   - exam_link_sent: Whether exam link email was sent
+   
+   Used for: Admission form submissions, email tracking
+
+2. EXAM_SESSIONS TABLE
+   Defines different exam batches/dates
+   
+   Key Columns:
+   - exam_date, exam_start_time, exam_end_time
+   - exam_format: Online, In-Person, Hybrid
+   - exam_link: Meeting/exam platform link
+   - status: scheduled, ongoing, completed, cancelled
+   - capacity: How many students can take this exam
+   
+   Used for: Managing multiple exam dates
+
+3. EXAM_REGISTRATIONS TABLE
+   Track which students are taking which exams
+   
+   Key Columns:
+   - admission_id: Link to student
+   - exam_session_id: Link to exam date
+   - attendance_status: attended, absent, late
+   - score, result: Test results
+   - status: registered, completed, no-show
+   
+   Used for: Attendance, scoring, results tracking
+
+4. EMAIL_LOGS TABLE
+   Audit trail of all emails sent
+   
+   Key Columns:
+   - recipient_email: Who received the email
+   - email_type: confirmation, exam_link, result, reminder
+   - sent_date, status
+   
+   Used for: Debugging, verification, compliance
+
+5. ADMISSION_STATS TABLE
+   Quick summary statistics
+   
+   Used for: Dashboard stats, quick reporting
+
+6. SYSTEM_LOGS TABLE
+   Tracks admin actions
+   
+   Used for: Audit trail, security
+
+7. PROGRAMS TABLE
+   List of available programs
+   
+   Used for: Dropdowns, program management
+
+---
+HOW TO USE THE DATABASE
+------------------------
+
+SCENARIO 1: Student Submits Admission Form
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Flow:
+1. Student fills form → Register.html
+2. Form saves to admissions table
+3. Admission ID generated: PTC-20260218-XXXX
+4. Confirmation email sent
+5. email_sent_date and exam_link_sent flag updated
+
+Database:
+INSERT INTO admissions (admission_id, given_name, last_name, email, program, status)
+VALUES ('PTC-20260218-1234', 'John', 'Doe', 'john@email.com', 'BS IT', 'pending');
+
+---
+
+SCENARIO 2: Admin Creates Exam Schedule
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Flow:
+1. Admin goes to admin_exam_config.html
+2. Sets exam date, time, link, capacity
+3. Saves to exam_sessions table
+
+Database:
+INSERT INTO exam_sessions (session_name, exam_date, exam_start_time, exam_end_time, 
+                          exam_format, exam_link, capacity)
+VALUES ('Entrance Exam - Batch 1', '2026-06-01', '09:00:00', '12:00:00', 
+        'Online', 'https://zoom.us/...', 150);
+
+---
+
+SCENARIO 3: Admin Sends Exam Links
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Flow:
+1. Admin schedules exam link emails
+2. Scheduler sends emails at scheduled time
+3. Email logs created
+4. exam_link_sent flag set to TRUE
+5. Students can register for exam
+
+Database:
+UPDATE admissions SET exam_link_sent = TRUE, exam_link_sent_date = NOW() 
+WHERE email IN ('...', '...', '...');
+
+INSERT INTO email_logs (recipient_email, email_type, subject, status)
+VALUES ('student@email.com', 'exam_link', 'Your Exam Link', 'sent');
+
+---
+
+SCENARIO 4: Track Exam Takers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When exam date arrives:
+
+1. Student takes exam
+2. Admin logs attendance
+3. Admin enters scores
+4. System calculates pass/fail
+5. Results recorded
+
+Database:
+INSERT INTO exam_registrations (admission_id, exam_session_id, status)
+VALUES (1, 1, 'registered');
+
+-- After exam:
+UPDATE exam_registrations 
+SET attendance_status = 'attended', 
+    score = 85, 
+    score_percentage = 85,
+    result = 'passed',
+    status = 'completed'
+WHERE id = 1;
+
+---
+USEFUL QUERIES
+---------------
+
+1. Get all students who received exam links:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SELECT admission_id, given_name, last_name, email, program, exam_link_sent_date
+FROM admissions
+WHERE exam_link_sent = TRUE
+ORDER BY exam_link_sent_date DESC;
+
+2. Get exam takers for a specific exam:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SELECT a.admission_id, a.given_name, a.last_name, er.attendance_status, er.score, er.result
+FROM exam_registrations er
+JOIN admissions a ON er.admission_id = a.id
+WHERE er.exam_session_id = 1
+ORDER BY a.last_name;
+
+3. Get passing rate by program:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SELECT a.program, 
+       COUNT(er.id) as total_took_exam,
+       SUM(CASE WHEN er.result = 'passed' THEN 1 ELSE 0 END) as passed,
+       ROUND(100 * SUM(CASE WHEN er.result = 'passed' THEN 1 ELSE 0 END) / COUNT(er.id), 2) as pass_rate
+FROM exam_registrations er
+JOIN admissions a ON er.admission_id = a.id
+WHERE er.status = 'completed'
+GROUP BY a.program;
+
+4. Track which students haven't taken exam:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SELECT admission_id, given_name, last_name, email, program
+FROM admissions
+WHERE id NOT IN (
+  SELECT DISTINCT admission_id FROM exam_registrations
+)
+AND exam_link_sent = TRUE;
+
+5. Email log - emails that failed:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SELECT recipient_email, email_type, error_message, sent_date
+FROM email_logs
+WHERE status = 'failed'
+ORDER BY sent_date DESC;
+
+---
+VIEWS (Pre-made SQL Queries)
+-----------------------------
+
+The database includes 3 useful views:
+
+1. v_latest_exam_session
+   Get the next upcoming exam:
+   SELECT * FROM v_latest_exam_session;
+
+2. v_exam_takers_summary
+   Summary of exam results:
+   SELECT * FROM v_exam_takers_summary;
+
+3. v_program_stats
+   Stats by program:
+   SELECT * FROM v_program_stats;
+
+---
+MAINTENANCE
+-----------
+
+1. BACKUP YOUR DATABASE
+   
+   PhpMyAdmin:
+   - Select database
+   - Click "Export"
+   - Click "Go"
+   - Save file safely
+
+2. REGULAR CLEANUP
+   
+   Delete old email logs (keep last 3 months):
+   DELETE FROM email_logs 
+   WHERE sent_date < DATE_SUB(NOW(), INTERVAL 3 MONTH);
+
+3. MONITOR DATABASE SIZE
+   
+   PhpMyAdmin shows database size in the left panel
+
+---
+NEXT STEPS
+----------
+
+1. Run PTC_Database.sql to create tables
+2. New admissions will automatically go to the admissions table
+3. Create exam sessions via admin panel
+4. Register students for exams
+5. Track attendance and scores
+6. View reports and analytics
+
+---
+SUPPORT
+-------
+
+If you get errors when running the SQL:
+
+1. Check that your MySQL version is 5.7 or higher
+2. Make sure the database user has CREATE TABLE permissions
+3. Ensure no table name conflicts with existing databases
+4. Check error messages in PhpMyAdmin
+
+Common error fixes:
+- "Access denied": Check database credentials in db_config.php
+- "Table already exists": Tables will be skipped if they already exist
+- "No database selected": Select database before running SQL
+
+For more help, check error_log file in your project directory.

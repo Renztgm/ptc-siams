@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Management - Register & Track Test Takers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #2e7d32;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #2e7d32;
+            padding-bottom: 15px;
+        }
+
+        h1 {
+            color: #2e7d32;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            color: #2e7d32;
+            font-size: 20px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #2e7d32;
+            padding-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            color: #1565c0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .alert.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #2e7d32;
+            background-color: #f0f8f0;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-save {
+            background-color: #2e7d32;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-save:hover {
+            background-color: #1b5e20;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(46, 125, 50, 0.3);
+        }
+
+        .btn-small {
+            background-color: #2196F3;
+            color: white;
+            padding: 6px 15px;
+            font-size: 12px;
+            width: auto;
+        }
+
+        .btn-small:hover {
+            background-color: #1976D2;
+        }
+
+        .btn-edit {
+            background-color: #ff9800;
+            color: white;
+            padding: 6px 15px;
+            font-size: 12px;
+            width: auto;
+        }
+
+        .btn-delete {
+            background-color: #f44336;
+            color: white;
+            padding: 6px 15px;
+            font-size: 12px;
+            width: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th {
+            background-color: #2e7d32;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-registered {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .status-completed {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .status-passed {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .status-failed {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .status-absent {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #2e7d32;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #2e7d32;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            position: relative;
+            bottom: -2px;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            color: #2e7d32;
+            border-bottom-color: #2e7d32;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            margin: 50px auto;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+            border-bottom: 2px solid #2e7d32;
+            padding-bottom: 10px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+        }
+
+        .close-btn {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        @media (max-width: 600px) {
+            .row {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>📝 Exam Management Center</h1>
+            <p class="subtitle">Register students for exams and track test takers</p>
+        </header>
+
+        <div id="alert-container"></div>
+
+        <!-- TABS -->
+        <div class="panel">
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchTab('exams')">📋 Exam Sessions</button>
+                <button class="tab-button" onclick="switchTab('registrations')">📊 Exam Registrations</button>
+                <button class="tab-button" onclick="switchTab('results')">🏆 Results</button>
+                <button class="tab-button" onclick="switchTab('stats')">📈 Statistics</button>
+            </div>
+
+            <!-- TAB 1: EXAM SESSIONS -->
+            <div id="exams" class="tab-content active">
+                <h2>📋 Exam Sessions</h2>
+                
+                <div class="info-box">
+                    Create exam sessions that students will register for. Each session has a date, time, and exam link.
+                </div>
+
+                <div class="form-group">
+                    <button class="btn-small" onclick="showAddExamModal()" style="width: 100%; background-color: #2e7d32;">+ Create New Exam Session</button>
+                </div>
+
+                <table id="exams-table">
+                    <thead>
+                        <tr>
+                            <th>Session Name</th>
+                            <th>Date & Time</th>
+                            <th>Format</th>
+                            <th>Registered</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="exams-tbody">
+                        <tr><td colspan="5" style="text-align: center; color: #999;">Loading exam sessions...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TAB 2: REGISTRATIONS -->
+            <div id="registrations" class="tab-content">
+                <h2>📊 Exam Registrations</h2>
+                
+                <div class="info-box">
+                    Register students for upcoming exams. Once registered, track attendance and results.
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label for="filter-exam">Select Exam Session:</label>
+                        <select id="filter-exam" onchange="loadRegistrations()">
+                            <option value="">-- Select Exam --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button class="btn-small" onclick="showRegisterStudentModal()" style="width: 100%; background-color: #2e7d32;">+ Register Student</button>
+                    </div>
+                </div>
+
+                <table id="registrations-table">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Admission ID</th>
+                            <th>Status</th>
+                            <th>Attendance</th>
+                            <th>Score</th>
+                            <th>Result</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="registrations-tbody">
+                        <tr><td colspan="7" style="text-align: center; color: #999;">Select an exam session to view registrations</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TAB 3: RESULTS -->
+            <div id="results" class="tab-content">
+                <h2>🏆 Exam Results</h2>
+                
+                <div class="info-box">
+                    Enter student scores and track exam results. Pass/fail is calculated based on passing score.
+                </div>
+
+                <div class="form-group">
+                    <label for="filter-exam-results">Select Exam Session:</label>
+                    <select id="filter-exam-results" onchange="loadResults()">
+                        <option value="">-- Select Exam --</option>
+                    </select>
+                </div>
+
+                <table id="results-table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Attendance</th>
+                            <th>Score</th>
+                            <th>Pass/Fail</th>
+                            <th>Result Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-tbody">
+                        <tr><td colspan="6" style="text-align: center; color: #999;">Select an exam to view results</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TAB 4: STATISTICS -->
+            <div id="stats" class="tab-content">
+                <h2>📈 Statistics & Reports</h2>
+
+                <div class="stats" id="summary-stats">
+                    <div class="stat-box">
+                        <div class="stat-number" id="stat-total-admitted">0</div>
+                        <div class="stat-label">Total Admitted</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="stat-registered-exam">0</div>
+                        <div class="stat-label">Registered for Exam</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="stat-exam-completed">0</div>
+                        <div class="stat-label">Exam Completed</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="stat-passed">0</div>
+                        <div class="stat-label">Passed</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px; color: #2e7d32;">Program-wise Breakdown</h3>
+                <table id="program-stats-table">
+                    <thead>
+                        <tr>
+                            <th>Program</th>
+                            <th>Applications</th>
+                            <th>Registered for Exam</th>
+                            <th>Completed</th>
+                            <th>Passed</th>
+                            <th>Pass Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody id="program-stats-tbody">
+                        <tr><td colspan="6" style="text-align: center; color: #999;">Loading statistics...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- Add Exam Session Modal -->
+    <div id="add-exam-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close-btn" onclick="closeModal('add-exam-modal')">&times;</span>
+                <h2>Create Exam Session</h2>
+            </div>
+            <form onsubmit="saveExamSession(event)">
+                <div class="form-group">
+                    <label>Session Name:</label>
+                    <input type="text" id="exam-name" placeholder="e.g., Entrance Exam - Batch 1" required>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label>Date:</label>
+                        <input type="date" id="exam-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Time:</label>
+                        <input type="time" id="exam-time" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label>Duration (minutes):</label>
+                        <input type="number" id="exam-duration" value="180" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Capacity:</label>
+                        <input type="number" id="exam-capacity" value="100" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="exam-password" placeholder="Admin password" required>
+                </div>
+                <button class="btn-save" type="submit">Create Session</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Student Modal -->
+    <div id="register-student-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close-btn" onclick="closeModal('register-student-modal')">&times;</span>
+                <h2>Register Student for Exam</h2>
+            </div>
+            <form onsubmit="registerStudent(event)">
+                <div class="form-group">
+                    <label>Select Student:</label>
+                    <select id="student-select" required>
+                        <option value="">Loading students...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" placeholder="Admin password" required>
+                </div>
+                <button class="btn-save" type="submit">Register Student</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Enter Results Modal -->
+    <div id="enter-results-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close-btn" onclick="closeModal('enter-results-modal')">&times;</span>
+                <h2>Enter Exam Results</h2>
+            </div>
+            <form onsubmit="saveResults(event)">
+                <div class="form-group">
+                    <label>Attendance:</label>
+                    <select id="result-attendance" required>
+                        <option value="">-- Select --</option>
+                        <option value="attended">Attended</option>
+                        <option value="absent">Absent</option>
+                        <option value="late">Late</option>
+                    </select>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label>Score:</label>
+                        <input type="number" id="result-score" step="0.01" min="0" max="100" placeholder="0-100">
+                    </div>
+                    <div class="form-group">
+                        <label>Passing Score:</label>
+                        <input type="number" id="result-passing-score" value="60" step="0.01" min="0" max="100">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Remarks:</label>
+                    <textarea id="result-remarks" placeholder="Any notes about the exam..." style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; resize: vertical; min-height: 60px;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" placeholder="Admin password" required>
+                </div>
+                <button class="btn-save" type="submit">Save Results</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentExamSessionId = null;
+        let currentRegistrationId = null;
+
+        window.addEventListener('load', () => {
+            loadExamSessions();
+            loadStats();
+        });
+
+        // TAB SWITCHING
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Deactivate all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Activate button
+            event.target.classList.add('active');
+            
+            // Load data for specific tabs
+            if (tabName === 'registrations') {
+                loadExamSelectDropdown('filter-exam');
+            } else if (tabName === 'results') {
+                loadExamSelectDropdown('filter-exam-results');
+            } else if (tabName === 'stats') {
+                loadStats();
+            }
+        }
+
+        // ALERT MANAGEMENT
+        function showAlert(message, type = 'success') {
+            const container = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert ${type}`;
+            alert.textContent = message;
+            container.innerHTML = '';
+            container.appendChild(alert);
+            alert.style.display = 'block';
+
+            if (type === 'success') {
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 4000);
+            }
+        }
+
+        // MODAL MANAGEMENT
+        function showAddExamModal() {
+            document.getElementById('add-exam-modal').style.display = 'block';
+        }
+
+        function showRegisterStudentModal() {
+            if (!currentExamSessionId) {
+                showAlert('Please select an exam session first', 'error');
+                return;
+            }
+            document.getElementById('register-student-modal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // LOAD EXAM SESSIONS
+        async function loadExamSessions() {
+            try {
+                const response = await fetch('../api/manage_exams.php?action=get_sessions');
+                const data = await response.json();
+
+                const tbody = document.getElementById('exams-tbody');
+                
+                if (data.success && data.sessions.length > 0) {
+                    tbody.innerHTML = data.sessions.map(session => `
+                        <tr>
+                            <td>${escapeHtml(session.session_name)}</td>
+                            <td>${new Date(session.exam_date).toLocaleDateString()} ${session.exam_start_time}</td>
+                            <td>${escapeHtml(session.exam_format)}</td>
+                            <td>${session.registered_count || 0}</td>
+                            <td>
+                                <button class="btn-edit" onclick="editExam(${session.id})">Edit</button>
+                                <button class="btn-delete" onclick="deleteExam(${session.id})">Delete</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">No exam sessions yet. Create one to get started.</td></tr>';
+                }
+            } catch (error) {
+                showAlert('Error loading exam sessions: ' + error.message, 'error');
+            }
+        }
+
+        // LOAD EXAM DROPDOWN
+        async function loadExamSelectDropdown(selectId) {
+            try {
+                const response = await fetch('../api/manage_exams.php?action=get_sessions');
+                const data = await response.json();
+
+                const select = document.getElementById(selectId);
+                if (data.success && data.sessions.length > 0) {
+                    select.innerHTML = '<option value="">-- Select Exam --</option>' +
+                        data.sessions.map(session => 
+                            `<option value="${session.id}">${escapeHtml(session.session_name)} - ${new Date(session.exam_date).toLocaleDateString()}</option>`
+                        ).join('');
+                }
+            } catch (error) {
+                showAlert('Error loading exams: ' + error.message, 'error');
+            }
+        }
+
+        // SAVE EXAM SESSION
+        async function saveExamSession(e) {
+            e.preventDefault();
+
+            const formData = new FormData();
+            formData.append('action', 'create_session');
+            formData.append('session_name', document.getElementById('exam-name').value);
+            formData.append('exam_date', document.getElementById('exam-date').value);
+            formData.append('exam_start_time', document.getElementById('exam-time').value);
+            formData.append('duration', document.getElementById('exam-duration').value);
+            formData.append('capacity', document.getElementById('exam-capacity').value);
+            formData.append('password', document.getElementById('exam-password').value);
+
+            try {
+                const response = await fetch('../api/manage_exams.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('Exam session created successfully!', 'success');
+                    closeModal('add-exam-modal');
+                    loadExamSessions();
+                } else {
+                    showAlert(data.message || 'Failed to create exam session', 'error');
+                }
+            } catch (error) {
+                showAlert('Error: ' + error.message, 'error');
+            }
+        }
+
+        // LOAD REGISTRATIONS
+        async function loadRegistrations() {
+            const examId = document.getElementById('filter-exam').value;
+            
+            if (!examId) {
+                document.getElementById('registrations-tbody').innerHTML = 
+                    '<tr><td colspan="7" style="text-align: center; color: #999;">Select an exam session to view registrations</td></tr>';
+                return;
+            }
+
+            currentExamSessionId = examId;
+
+            try {
+                const response = await fetch(`../api/manage_exams.php?action=get_registrations&exam_id=${examId}`);
+                const data = await response.json();
+
+                const tbody = document.getElementById('registrations-tbody');
+                
+                if (data.success && data.registrations.length > 0) {
+                    tbody.innerHTML = data.registrations.map(reg => `
+                        <tr>
+                            <td>${escapeHtml(reg.student_name)}</td>
+                            <td>${escapeHtml(reg.admission_id)}</td>
+                            <td><span class="status-badge status-${reg.status}">${reg.status}</span></td>
+                            <td>${reg.attendance_status || '-'}</td>
+                            <td>${reg.score || '-'}</td>
+                            <td>${reg.result ? `<span class="status-badge status-${reg.result}">${reg.result}</span>` : '-'}</td>
+                            <td>
+                                <button class="btn-edit" onclick="showResultsModal(${reg.id}, '${escapeHtml(reg.student_name)}')">Results</button>
+                                <button class="btn-delete" onclick="unregisterStudent(${reg.id})">Unregister</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">No students registered for this exam yet.</td></tr>';
+                }
+            } catch (error) {
+                showAlert('Error loading registrations: ' + error.message, 'error');
+            }
+        }
+
+        // SHOW RESULTS MODAL
+        function showResultsModal(regId, studentName) {
+            currentRegistrationId = regId;
+            document.querySelector('#enter-results-modal .modal-header h2').textContent = `Results for ${studentName}`;
+            document.getElementById('enter-results-modal').style.display = 'block';
+        }
+
+        // LOAD RESULTS
+        async function loadResults() {
+            const examId = document.getElementById('filter-exam-results').value;
+            
+            if (!examId) {
+                document.getElementById('results-tbody').innerHTML = 
+                    '<tr><td colspan="6" style="text-align: center; color: #999;">Select an exam to view results</td></tr>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`../api/manage_exams.php?action=get_results&exam_id=${examId}`);
+                const data = await response.json();
+
+                const tbody = document.getElementById('results-tbody');
+                
+                if (data.success && data.results.length > 0) {
+                    tbody.innerHTML = data.results.map(result => `
+                        <tr>
+                            <td>${escapeHtml(result.student_name)}</td>
+                            <td>${result.attendance_status || '-'}</td>
+                            <td>${result.score ? result.score + '%' : '-'}</td>
+                            <td>${result.result ? `<span class="status-badge status-${result.result}">${result.result}</span>` : '-'}</td>
+                            <td>${result.result_date ? new Date(result.result_date).toLocaleDateString() : '-'}</td>
+                            <td>
+                                <button class="btn-edit" onclick="showResultsModal(${result.id}, '${escapeHtml(result.student_name)}')">Edit</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #999;">No results yet.</td></tr>';
+                }
+            } catch (error) {
+                showAlert('Error loading results: ' + error.message, 'error');
+            }
+        }
+
+        // SAVE RESULTS
+        async function saveResults(e) {
+            e.preventDefault();
+
+            const formData = new FormData();
+            formData.append('action', 'save_results');
+            formData.append('registration_id', currentRegistrationId);
+            formData.append('attendance_status', document.getElementById('result-attendance').value);
+            formData.append('score', document.getElementById('result-score').value);
+            formData.append('passing_score', document.getElementById('result-passing-score').value);
+            formData.append('remarks', document.getElementById('result-remarks').value);
+            formData.append('password', document.querySelector('#enter-results-modal input[type="password"]').value);
+
+            try {
+                const response = await fetch('../api/manage_exams.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('Results saved successfully!', 'success');
+                    closeModal('enter-results-modal');
+                    loadRegistrations();
+                    loadResults();
+                } else {
+                    showAlert(data.message || 'Failed to save results', 'error');
+                }
+            } catch (error) {
+                showAlert('Error: ' + error.message, 'error');
+            }
+        }
+
+        // LOAD STATISTICS
+        async function loadStats() {
+            try {
+                const response = await fetch('../api/manage_exams.php?action=get_stats');
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('stat-total-admitted').textContent = data.stats.total_admitted || 0;
+                    document.getElementById('stat-registered-exam').textContent = data.stats.registered_for_exam || 0;
+                    document.getElementById('stat-exam-completed').textContent = data.stats.exam_completed || 0;
+                    document.getElementById('stat-passed').textContent = data.stats.passed || 0;
+
+                    // Load program stats
+                    const tbody = document.getElementById('program-stats-tbody');
+                    if (data.program_stats && data.program_stats.length > 0) {
+                        tbody.innerHTML = data.program_stats.map(stats => `
+                            <tr>
+                                <td>${escapeHtml(stats.program)}</td>
+                                <td>${stats.applications}</td>
+                                <td>${stats.registered}</td>
+                                <td>${stats.completed}</td>
+                                <td>${stats.passed}</td>
+                                <td>${stats.pass_rate}%</td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                showAlert('Error loading statistics: ' + error.message, 'error');
+            }
+        }
+
+        // HELPER FUNCTIONS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function registerStudent(e) {
+            e.preventDefault();
+            showAlert('Feature coming soon', 'info');
+        }
+
+        function editExam(examId) {
+            showAlert('Feature coming soon', 'info');
+        }
+
+        function deleteExam(examId) {
+            if (confirm('Are you sure you want to delete this exam session?')) {
+                showAlert('Feature coming soon', 'info');
+            }
+        }
+
+        function unregisterStudent(regId) {
+            if (confirm('Remove this student from the exam?')) {
+                showAlert('Feature coming soon', 'info');
+            }
+        }
+    </script>
+
+</body>
+</html>

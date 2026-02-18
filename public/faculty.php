@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Student Login - PTC</title>
+  <title>Faculty Login - PTC</title>
   <style>
     body {
       margin: 0;
@@ -49,13 +49,13 @@
 </head>
 <body>
   <div class="header">
-    <img src="Logo.png" alt="PTC Logo">
+    <img src="assets/Logo.png" alt="PTC Logo">
     <h1>PATEROS TECHNOLOGICAL COLLEGE</h1>
-    <p style="color: gold; font-size: 24px; font-weight: bold; margin-top: 10px;">SMART ACADEMIC MANAGEMENT SYSTEM</p>
+    <p style="color: gold; font-size: 24px; font-weight: bold; margin-top: 10px;">SMART ACADEMIC INSTITUTIONAL MANAGEMENT SYSTEM</p>
   </div>
   <div class="login-container">
-    <h2>Student Login</h2>
-    <form action="login.php" method="POST">
+    <h2>Faculty Login</h2>
+    <form action="faculty_login.php" method="POST">
       <label for="username">Username</label>
       <input type="text" id="username" name="username" placeholder="Enter Username" required>
       <label for="password">Password</label>

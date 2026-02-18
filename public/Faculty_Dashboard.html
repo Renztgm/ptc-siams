@@ -1,0 +1,241 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Faculty Dashboard</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #e6ffe6;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      height: 100vh;
+      width: 250px;
+      position: fixed;
+      background-color: #2e8b57;
+      color: white;
+      padding-top: 20px;
+      overflow-y: auto;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .sidebar a,
+    .dropdown-btn {
+      padding: 15px 25px;
+      display: block;
+      color: white;
+      text-decoration: none;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .sidebar a:hover,
+    .dropdown-btn:hover {
+      background-color: #3cb371;
+    }
+
+    .dropdown-container {
+      display: none;
+      background-color: #3cb371;
+      padding-left: 15px;
+    }
+
+    .dropdown-container a {
+      padding: 10px 15px;
+      display: block;
+      font-size: 15px;
+      color: white;
+      text-decoration: none;
+    }
+
+    .dropdown-btn.active + .dropdown-container {
+      display: block;
+    }
+
+    /* Top Profile Bar */
+    .topbar {
+      margin-left: 250px;
+      padding: 10px 20px;
+      background-color: #006400;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .topbar img.profile {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .topbar .profile-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Content Area */
+    .content {
+      margin-left: 250px;
+      padding: 30px;
+      background-color: #ccffcc;
+      min-height: 100vh;
+    }
+
+    .header-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .header-container img.logo {
+      width: 60px;
+      height: auto;
+    }
+
+    .header-container h1 {
+      color: #004d00;
+      font-size: 28px;
+      margin: 0;
+    }
+
+    .content p {
+      font-size: 18px;
+      margin-top: 10px;
+      text-align: left;
+    }
+
+    /* Class Buttons */
+    .class-buttons {
+      margin-top: 30px;
+    }
+
+    .class-buttons h3 {
+      margin-bottom: 10px;
+      color: #004d00;
+    }
+
+    .class-buttons button {
+      margin: 5px;
+      padding: 10px 20px;
+      background-color: #2e8b57;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .class-buttons button:hover {
+      background-color: #3cb371;
+    }
+
+    /* Responsive Layout */
+    @media screen and (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+
+      .topbar {
+        margin-left: 0;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .content {
+        margin-left: 0;
+        padding: 20px;
+      }
+
+      .header-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .header-container h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- âœ… Sidebar Navigation -->
+  <div class="sidebar">
+    <h2>Faculty Dashboard</h2>
+    <a href="Faculty_Form.HTML">My Account</a>
+    <a href="faculty_load_schedule.HTML">Teaching Load</a>
+     <a href="main_dashboard.HTML">Grade Sheet</a>
+      <a href="main_dashboard.html">Encode Grade</a>
+     
+  
+    </div>
+
+    <a href="BSIT 1A.html">Class Schedule</a>
+  </div>
+
+  <!-- âœ… Top Profile Bar -->
+  <div class="topbar">
+    <div class="profile-info">
+      <img src="profile.jpg" alt="Faculty Photo" class="profile" />
+      <div>
+        <strong>Prof. Maria Santos</strong><br>
+        ID: 2022-TEACH-0003
+      </div>
+    </div>
+  </div>
+
+  <!-- âœ… Main Content Area -->
+  <div class="content">
+    <div class="header-container">
+      <img src="assets/Logo.png" alt="School Logo" class="logo">
+      <h1>Welcome, Prof. Santos!</h1>
+    </div>
+    <p>Use this dashboard to manage your teaching responsibilities, submit grades, and access class details.</p>
+
+    <!-- âœ… Class Buttons Section -->
+    <div class="class-buttons">
+      <h3>View Class Section:</h3>
+   
+      <button onclick="location.href='BSIT 1A.html'">BSIT 1A</button>
+          <button onclick="location.href='BSIT 1B.html'">BSIT 1B</button>
+      <button onclick="location.href='BSIT 1C.html'">BSIT 1C</button>
+     
+    </div>
+  </div>
+
+  <!-- âœ… Script for Dropdown Toggle -->
+  <script>
+    const dropdowns = document.querySelectorAll(".dropdown-btn");
+    dropdowns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        this.classList.toggle("active");
+        const dropdown = this.nextElementSibling;
+        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+      });
+    });
+  </script>
+
+</body>
+</html>

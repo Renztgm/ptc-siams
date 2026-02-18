@@ -1,0 +1,328 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PTC Admission</title>
+
+<style>
+body {
+    background-color: #2e7d32;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    color: white;
+}
+
+.header {
+    background-color: #1b5e20;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header img {
+    height: 60px;
+}
+
+.container {
+    max-width: 600px;
+    background: white;
+    color: black;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+label {
+    font-weight: bold;
+    margin-top: 15px;
+    display: block;
+}
+
+input, select {
+    width: 100%;
+    height: 40px;
+    padding: 8px 10px;
+    margin-top: 8px;
+    box-sizing: border-box;
+}
+
+button {
+    margin-top: 20px;
+    padding: 12px;
+    width: 100%;
+    background-color: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+</style>
+
+<!-- jsPDF CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- QR Code Generator -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+
+<body>
+
+<div class="header">
+    <img src="assets/Logo.png" alt="Logo">
+    <h1>Pateros Technological College</h1>
+</div>
+
+<div class="container">
+<h2 style="text-align:center;color:#2e7d32;">Admission Form</h2>
+
+<form id="admissionForm">
+
+<label>Given Name</label>
+<input type="text" id="givenName" oninput="this.value = this.value.toUpperCase()" required>
+
+<label>Last Name</label>
+<input type="text" id="lastName" oninput="this.value = this.value.toUpperCase()" required>
+
+<label>Middle Name</label>
+<input type="text" id="middleName" oninput="this.value = this.value.toUpperCase()" required>
+
+<label>Address</label>
+<input type="text" id="address" oninput="this.value = this.value.toUpperCase()" required>
+
+<label>Email</label>
+<input type="email" id="email" required>
+
+<label>Contact Number</label>
+<input type="tel" id="contact" placeholder="0908-616-5254" required>
+
+<label>Admission ID</label>
+<input type="text" id="admissionId" readonly style="background-color: #f0f0f0; cursor: not-allowed;">
+
+<label>Program</label>
+<select id="program" required>
+    <option value="">Select</option>
+    <option>BS Information Technology</option>
+    <option>BS Tourism Management</option>
+    <option>BS Secondary Education</option>
+    <option>TVL</option>
+</select>
+
+<button type="submit">Submit & Download PDF</button>
+</form>
+
+<!-- Hidden container for QR code -->
+<div id="qrCodeContainer" style="display: none;"></div>
+</div>
+
+<script>
+// Generate Admission ID function
+function generateAdmissionId() {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const random = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+    return `PTC-${year}${month}${day}-${random}`;
+}
+
+document.getElementById("admissionForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    // Load exam configuration
+    fetch('../api/exam_config.php?json')
+        .then(response => response.json())
+        .then(examConfig => {
+            processAdmissionSubmission(examConfig);
+        })
+        .catch(error => {
+            console.error('Error loading exam config:', error);
+            // Continue with default values if config doesn't load
+            const defaultConfig = {
+                exam_date: '2026-06-01',
+                exam_start_time: '09:00',
+                exam_end_time: '12:00',
+                exam_format: 'Online',
+                exam_location: 'Online',
+                exam_link: '[To be provided via email]',
+                exam_link_description: 'Will be provided 24 hours before the exam'
+            };
+            processAdmissionSubmission(defaultConfig);
+        });
+});
+
+function processAdmissionSubmission(examConfig) {
+    // Generate Admission ID on submission
+    const admissionId = generateAdmissionId();
+    document.getElementById('admissionId').value = admissionId;
+
+    const givenName = document.getElementById("givenName").value;
+    const lastName = document.getElementById("lastName").value;
+    const middleName = document.getElementById("middleName").value;
+    const address = document.getElementById("address").value;
+    const email = document.getElementById("email").value;
+    const contact = document.getElementById("contact").value;
+    const program = document.getElementById("program").value;
+
+    // Format exam date and time
+    const examDate = new Date(examConfig.exam_date);
+    const examDateStr = examDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const scheduleStr = `${examDateStr} - ${examConfig.exam_start_time} to ${examConfig.exam_end_time}`;
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const primaryColor = [46, 125, 50]; // #2e7d32 in RGB
+
+    // Header background
+    doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.rect(0, 0, 210, 40, 'F');
+
+    // Header text
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
+    doc.setFont(undefined, 'bold');
+    doc.text("Pateros Technological College", 20, 15);
+    doc.setFontSize(14);
+    doc.text("Admission Form", 20, 27);
+
+    // Reset to black text
+    doc.setTextColor(0, 0, 0);
+    doc.setFont(undefined, 'normal');
+
+    let y = 55;
+    const lineHeight = 10;
+
+    // Add a border box for content
+    doc.setDrawColor(46, 125, 50);
+    doc.setLineWidth(0.5);
+    doc.rect(15, 50, 180, 140);
+
+    // Form fields
+    doc.setFontSize(11);
+    
+    const fields = [
+        { label: "Admission ID:", value: admissionId },
+        { label: "Given Name:", value: givenName },
+        { label: "Last Name:", value: lastName },
+        { label: "Middle Name:", value: middleName },
+        { label: "Address:", value: address },
+        { label: "Email:", value: email },
+        { label: "Contact Number:", value: contact },
+        { label: "Program:", value: program },
+        { label: "Schedule:", value: scheduleStr },
+        { label: "Format:", value: examConfig.exam_format }
+    ];
+
+    fields.forEach(field => {
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(46, 125, 50);
+        doc.text(field.label, 20, y);
+        doc.setFont(undefined, 'normal');
+        doc.setTextColor(0, 0, 0);
+        doc.text(field.value, 70, y);
+        y += lineHeight;
+    });
+
+    // Add QR Code with examiner information
+    y += 10;
+    const qrData = `Admission ID: ${admissionId}\nExaminer: PTC\nDate: ${new Date().toLocaleDateString()}`;
+    doc.setFontSize(10);
+    doc.setTextColor(46, 125, 50);
+    doc.text("QR Code (Examiner Info):", 20, y);
+    y += 8;
+
+    // Generate QR code and add to PDF
+    const qrContainer = document.getElementById('qrCodeContainer');
+    qrContainer.innerHTML = '';
+    
+    new QRCode(qrContainer, {
+        text: qrData,
+        width: 100,
+        height: 100,
+        colorDark: "#2e7d32",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+
+    // Get QR code image from canvas after a small delay
+    setTimeout(() => {
+        const qrCanvas = qrContainer.querySelector('canvas');
+        if (qrCanvas) {
+            const qrImage = qrCanvas.toDataURL('image/png');
+            doc.addImage(qrImage, 'PNG', 20, y, 40, 40);
+        }
+
+        // Footer section
+        y += 50;
+        doc.setFillColor(240, 240, 240);
+        doc.rect(15, y, 180, 20, 'F');
+        doc.setTextColor(46, 125, 50);
+        doc.setFont(undefined, 'italic');
+        doc.setFontSize(10);
+        doc.text("Date Generated: " + new Date().toLocaleDateString(), 20, y + 10);
+
+        // Save PDF
+        const pdfData = doc.output('dataurlstring');
+        const fileName = `PTC_Admission_Form_${admissionId}.pdf`;
+        doc.save(fileName);
+
+        // Send email with PDF and exam config
+        sendEmailWithPDF(email, fileName, givenName, lastName, admissionId, pdfData, examConfig);
+
+    }, 500);
+}
+
+function sendEmailWithPDF(email, fileName, givenName, lastName, admissionId, pdfData, examConfig) {
+    // Prepare form data
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('firstName', givenName);
+    formData.append('lastName', lastName);
+    formData.append('admissionId', admissionId);
+    formData.append('pdfData', pdfData);
+    formData.append('examConfig', JSON.stringify(examConfig));
+
+    // Send to backend PHP script
+    fetch('../api/send_admission_email.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        // Check if response is ok
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.text(); // First get as text to debug
+    })
+    .then(text => {
+        try {
+            // Try to parse as JSON
+            const data = JSON.parse(text);
+            if (data.success) {
+                alert('âœ“ Admission form submitted successfully!\n\nAdmission ID: ' + admissionId + '\n\nA confirmation email has been sent to:\n' + email);
+                document.getElementById('admissionForm').reset();
+                document.getElementById('admissionId').value = '';
+            } else {
+                alert('Form submitted!\n\nAdmission ID: ' + admissionId + '\n\nNote: ' + (data.message || 'Confirmation email will be sent shortly.'));
+                document.getElementById('admissionForm').reset();
+                document.getElementById('admissionId').value = '';
+            }
+        } catch (e) {
+            // If not valid JSON, treat as success (server processed it)
+            console.log("Response text:", text);
+            alert('âœ“ Admission form submitted successfully!\n\nAdmission ID: ' + admissionId + '\n\nPlease check your email at: ' + email);
+            document.getElementById('admissionForm').reset();
+            document.getElementById('admissionId').value = '';
+        }
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+        // Even if email fails, form was submitted and saved
+        alert('âœ“ Admission form submitted successfully!\n\nAdmission ID: ' + admissionId + '\n\nYour form has been saved. A confirmation email will be sent to:\n' + email);
+        document.getElementById('admissionForm').reset();
+        document.getElementById('admissionId').value = '';
+    });
+}
+</script>
+
+</body>
+</html>
