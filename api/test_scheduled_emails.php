@@ -15,6 +15,8 @@ $response = [
 ];
 
 try {
+    // Set timezone to Philippines
+    date_default_timezone_set('Asia/Manila');
     // 1. Check scheduled emails directory
     $scheduledDir = __DIR__ . '/../storage/scheduled_emails';
     $response['diagnostics']['scheduled_dir_exists'] = is_dir($scheduledDir);

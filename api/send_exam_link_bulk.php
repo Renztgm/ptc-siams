@@ -171,8 +171,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 throw new Exception("Schedule date and time are required");
             }
             
-            // Create scheduled timestamp
-            $scheduledDateTime = new DateTime($scheduleDate . ' ' . $scheduleTime);
+            // Create scheduled timestamp with timezone awareness
+            date_default_timezone_set('Asia/Manila'); // Set to Philippines timezone
+            $scheduledDateTime = new DateTime($scheduleDate . ' ' . $scheduleTime, new DateTimeZone('Asia/Manila'));
             $scheduledTimestamp = $scheduledDateTime->getTimestamp();
             
             // Validate timestamp is in the future

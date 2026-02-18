@@ -1,6 +1,6 @@
 <?php
 session_start();
-include "../config/db.php"; //
+include "../config/db_config.php"; // Use proper config with InfinityFree support
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username']; //
@@ -28,6 +28,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "<script>alert('User not found'); window.location='admin.php';</script>";
         }
         mysqli_stmt_close($stmt);
+    } else {
+        echo "<script>alert('Database error: " . mysqli_error($conn) . "'); window.location='admin.php';</script>";
     }
 }
 ?>

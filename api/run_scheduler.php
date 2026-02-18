@@ -21,6 +21,9 @@ $response = [
 ];
 
 try {
+    // Set timezone to Philippines
+    date_default_timezone_set('Asia/Manila');
+    
     // Email configuration
     $senderEmail = 'arquero.sofia.tcu@gmail.com';
     $senderPassword = 'qjpf wvol cpgq tsoa';
