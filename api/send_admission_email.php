@@ -1,15 +1,28 @@
 <?php
-// Database connection - Create fresh connection
-$host     = "sql302.infinityfree.com";  
-$db_user  = "if0_41171248";
-$db_pass  = "vJoJA8PL88TC";
-$db_name  = "if0_41171248_ptc_database";
+// Database connection - Use environment detection like db_config.php
+// Detect environment
+$isInfinityFree = (strpos($_SERVER['DOCUMENT_ROOT'], 'infinityfree.com') !== false) || 
+                  (strpos($_SERVER['SERVER_NAME'], 'infinityfree') !== false);
+
+if ($isInfinityFree) {
+    // ===== INFINITYFREE =====
+    $host     = "sql302.infinityfree.com";  
+    $db_user  = "if0_41171248";
+    $db_pass  = "vJoJA8PL88TC";
+    $db_name  = "if0_41171248_ptc_database";
+} else {
+    // ===== LOCALHOST (XAMPP) =====
+    $host     = "localhost";
+    $db_user  = "root";
+    $db_pass  = "";
+    $db_name  = "ptc_system";
+}
 
 $conn = mysqli_connect($host, $db_user, $db_pass, $db_name);
 
 if (!$conn) {
-    error_log("Database connection failed: " . mysqli_connect_error());
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    error_log("Database connection failed: " . mysqli_connect_error() . " | Host: " . $host);
+    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . mysqli_connect_error()]);
     exit;
 }
 
@@ -19,7 +32,25 @@ mysqli_set_charset($conn, "utf8mb4");
 // Enable error logging
 error_log("=== Admission Email Script Started ===");
 error_log("POST Data: Email=" . (isset($_POST['email']) ? $_POST['email'] : 'NONE'));
+error_log("DB Host: " . $host);
+error_log("DB Name: " . $db_name);
 error_log("DB Connection: SUCCESS");
+
+// Check if admissions table exists
+$tableCheckResult = mysqli_query($conn, "SHOW TABLES LIKE 'admissions'");
+if (!$tableCheckResult) {
+    error_log("ERROR checking admissions table: " . mysqli_error($conn));
+    echo json_encode(['success' => false, 'message' => 'Database error: ' . mysqli_error($conn)]);
+    exit;
+}
+
+if (mysqli_num_rows($tableCheckResult) == 0) {
+    error_log("FATAL: admissions table does not exist in database " . $db_name);
+    echo json_encode(['success' => false, 'message' => 'Database error: admissions table not found']);
+    exit;
+}
+
+error_log("Admissions table verified");
 
 // Email configuration
 $senderEmail = 'arquero.sofia.tcu@gmail.com';
@@ -36,6 +67,31 @@ $contactNumber = isset($_POST['contact']) ? trim($_POST['contact']) : '';
 $program = isset($_POST['program']) ? trim($_POST['program']) : '';
 $admissionId = isset($_POST['admissionId']) ? trim($_POST['admissionId']) : '';
 $pdfData = isset($_POST['pdfData']) ? $_POST['pdfData'] : '';
+$action = isset($_POST['action']) ? trim($_POST['action']) : 'submit';
+
+// Handle email validation request
+if ($action === 'validate_email') {
+    // Validate email format
+    if (!filter_var($recipientEmail, FILTER_VALIDATE_EMAIL)) {
+        error_log("Invalid email format: " . $recipientEmail);
+        echo json_encode(['valid' => false, 'message' => 'Invalid email address']);
+        exit;
+    }
+
+    // Check if email is already registered
+    $emailCheckResult = mysqli_query($conn, "SELECT admission_id FROM admissions WHERE email = '" . mysqli_real_escape_string($conn, $recipientEmail) . "' LIMIT 1");
+    if ($emailCheckResult && mysqli_num_rows($emailCheckResult) > 0) {
+        $existingRecord = mysqli_fetch_assoc($emailCheckResult);
+        error_log("Email validation failed - already registered: " . $recipientEmail . " (Admission ID: " . $existingRecord['admission_id'] . ")");
+        echo json_encode(['valid' => false, 'message' => 'This email address is already registered in our system. Admission ID: ' . htmlspecialchars($existingRecord['admission_id']) . '. If you have questions, please contact the admissions office.']);
+        exit;
+    }
+
+    // Email is valid and not registered
+    error_log("Email validation passed: " . $recipientEmail);
+    echo json_encode(['valid' => true, 'message' => 'Email is valid']);
+    exit;
+}
 
 // Get exam configuration from POST or load from file
 $examConfig = [];
@@ -50,6 +106,15 @@ if (empty($examConfig) && file_exists(__DIR__ . '/exam_config.php')) {
 if (!filter_var($recipientEmail, FILTER_VALIDATE_EMAIL)) {
     error_log("Invalid email: " . $recipientEmail);
     echo json_encode(['success' => false, 'message' => 'Invalid email address']);
+    exit;
+}
+
+// Check if email is already registered
+$emailCheckResult = mysqli_query($conn, "SELECT admission_id FROM admissions WHERE email = '" . mysqli_real_escape_string($conn, $recipientEmail) . "' LIMIT 1");
+if ($emailCheckResult && mysqli_num_rows($emailCheckResult) > 0) {
+    $existingRecord = mysqli_fetch_assoc($emailCheckResult);
+    error_log("Email already registered: " . $recipientEmail . " (Admission ID: " . $existingRecord['admission_id'] . ")");
+    echo json_encode(['success' => false, 'message' => 'This email address is already registered in our system. Admission ID: ' . htmlspecialchars($existingRecord['admission_id']) . '. If you have questions, please contact the admissions office.']);
     exit;
 }
 
@@ -219,31 +284,23 @@ function sendEmailViaSmtp($senderEmail, $senderPassword, $senderName, $recipient
 }
 
 function getEmailTemplate($firstName, $lastName, $admissionId, $examConfig = []) {
-    // Set default exam config if not provided
-    $examConfig = array_merge([
-        'exam_date' => '2026-06-01',
-        'exam_start_time' => '09:00',
-        'exam_end_time' => '12:00',
-        'exam_format' => 'Online',
-        'exam_location' => 'Online',
-        'exam_link' => '[To be provided via email]',
-        'exam_link_description' => 'Will be provided 24 hours before the exam'
-    ], $examConfig);
-
-    // Format exam date
-    $examDate = new DateTime($examConfig['exam_date']);
-    $examDateStr = $examDate->format('F j, Y');
+    
+    // Generate QR code using a free QR code API
+    $qrData = "Admission ID: " . $admissionId . "\nName: " . $firstName . " " . $lastName . "\nDate: " . date('Y-m-d');
+    $qrDataEncoded = urlencode($qrData);
+    $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" . $qrDataEncoded;
     
     return "
     <html>
     <head>
         <style>
-            body { font-family: Arial, sans-serif; color: #333; }
+            body { font-family: Arial, sans-serif; color: #333; line-height: 1.6; }
             .header { background-color: #2e7d32; color: white; padding: 20px; text-align: center; }
             .content { padding: 20px; max-width: 600px; margin: 0 auto; }
             .footer { background-color: #f0f0f0; padding: 15px; text-align: center; font-size: 12px; }
-            .admission-id { color: #2e7d32; font-weight: bold; font-size: 16px; }
-            .info-box { background-color: #f9f9f9; border-left: 4px solid #2e7d32; padding: 15px; margin: 20px 0; }
+            .admission-id { color: #2e7d32; font-weight: bold; font-size: 14px; }
+            .qr-section { text-align: center; margin: 20px 0; padding: 15px; background-color: #f9f9f9; border: 2px solid #2e7d32; }
+            .qr-section img { max-width: 150px; height: auto; }
         </style>
     </head>
     <body>
@@ -252,29 +309,18 @@ function getEmailTemplate($firstName, $lastName, $admissionId, $examConfig = [])
             <p>Admission Confirmation</p>
         </div>
         <div class='content'>
-            <p>Dear <strong>" . htmlspecialchars($firstName . ' ' . $lastName) . "</strong>,</p>
-            <p>Thank you for submitting your admission form to Pateros Technological College.</p>
-            <div class='info-box'>
-                <p><strong>Your Admission ID:</strong> <span class='admission-id'>" . htmlspecialchars($admissionId) . "</span></p>
+            <p>Dear " . htmlspecialchars($firstName) . " " . htmlspecialchars($lastName) . ",</p>
+            <p>Thank you for your interest in applying.</p>
+            <p>Please proceed to the <strong>PTC grounds</strong> to pay the required application fee. Once your payment has been processed, you will receive an email containing the entrance exam link, as well as the scheduled date and time of your examination.</p>
+            <p><strong>Your Admission ID:</strong> <span class='admission-id'>" . htmlspecialchars($admissionId) . "</span></p>
+            <p>If you have any questions, please feel free to contact us.</p>
+            
+            <div class='qr-section'>
+                <p><strong>Your Admission QR Code:</strong></p>
+                <img src='" . $qrCodeUrl . "' alt='Admission QR Code'>
             </div>
-            <h3>Important Details:</h3>
-            <ul>
-                <li><strong>Examination Date:</strong> " . htmlspecialchars($examDateStr) . "</li>
-                <li><strong>Examination Format:</strong> " . htmlspecialchars($examConfig['exam_format']) . "</li>
-                <li><strong>Time:</strong> " . htmlspecialchars($examConfig['exam_start_time']) . " to " . htmlspecialchars($examConfig['exam_end_time']) . "</li>
-                <li><strong>Location:</strong> " . htmlspecialchars($examConfig['exam_location']) . "</li>
-                <li><strong>Exam Link:</strong> " . htmlspecialchars($examConfig['exam_link']) . "</li>
-                <li><strong>Note:</strong> " . htmlspecialchars($examConfig['exam_link_description']) . "</li>
-            </ul>
-            <p><strong>What's Next:</strong></p>
-            <ol>
-                <li>Print the attached PDF admission form</li>
-                <li>Bring it to the examination venue on the scheduled date</li>
-                <li>Bring a valid ID and/or school credentials</li>
-                <li>Arrive 30 minutes before the examination time</li>
-            </ol>
-            <p>If you have any questions or concerns, please contact the PTC Admissions Office at your earliest convenience.</p>
-            <p style='margin-top: 30px;'>Best regards,<br><strong>PTC Admissions Team</strong></p>
+            
+            <p style='margin-top: 30px;'>Best regards,<br><strong>Admissions Office</strong></p>
         </div>
         <div class='footer'>
             <p>&copy; 2026 Pateros Technological College. All rights reserved.</p>
@@ -301,6 +347,16 @@ function logAdmissionToDatabase($conn, $givenName, $middleName, $lastName, $addr
         // Create full name
         $fullName = trim($givenName . ' ' . $middleName . ' ' . $lastName);
         
+        // First check what columns exist in the admissions table
+        $columnsResult = mysqli_query($conn, "DESCRIBE admissions");
+        if ($columnsResult) {
+            $columns = array();
+            while ($row = mysqli_fetch_assoc($columnsResult)) {
+                $columns[] = $row['Field'];
+            }
+            error_log("Available columns in admissions table: " . json_encode($columns));
+        }
+        
         // Prepare SQL statement with correct column names from database schema
         $sql = "INSERT INTO admissions (given_name, middle_name, last_name, full_name, address, contact_number, email, program, admission_id, submission_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
         error_log("Preparing SQL: $sql");
@@ -309,17 +365,28 @@ function logAdmissionToDatabase($conn, $givenName, $middleName, $lastName, $addr
         
         if (!$stmt) {
             error_log("FATAL: Statement preparation failed - " . $conn->error);
-            return false;
+            // Try alternative column names
+            error_log("Attempting alternative SQL without middle_name...");
+            $sql = "INSERT INTO admissions (first_name, last_name, full_name, address, contact_number, email, program, admission_id, submission_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                error_log("FATAL: Alternative SQL also failed - " . $conn->error);
+                return false;
+            }
+            if (!$stmt->bind_param("sssssssss", $givenName, $lastName, $fullName, $address, $contactNumber, $email, $program, $admissionId)) {
+                error_log("FATAL: Parameter binding failed - " . $stmt->error);
+                $stmt->close();
+                return false;
+            }
+        } else {
+            // Bind parameters (9 parameters for 9 fields - no submission_date as it uses NOW())
+            if (!$stmt->bind_param("sssssssss", $givenName, $middleName, $lastName, $fullName, $address, $contactNumber, $email, $program, $admissionId)) {
+                error_log("FATAL: Parameter binding failed - " . $stmt->error);
+                $stmt->close();
+                return false;
+            }
         }
         
-        error_log("Statement prepared successfully");
-        
-        // Bind parameters (9 parameters for 9 fields - no submission_date as it uses NOW())
-        if (!$stmt->bind_param("sssssssss", $givenName, $middleName, $lastName, $fullName, $address, $contactNumber, $email, $program, $admissionId)) {
-            error_log("FATAL: Parameter binding failed - " . $stmt->error);
-            $stmt->close();
-            return false;
-        }
         error_log("Parameters bound successfully");
         
         // Execute statement
