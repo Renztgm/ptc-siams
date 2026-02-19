@@ -1,41 +1,48 @@
 <?php
 
-// Enable error reporting
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Detect environment
-// Check if running on InfinityFree by looking at server path or domain
-$isInfinityFree = (strpos($_SERVER['DOCUMENT_ROOT'], 'infinityfree.com') !== false) || 
-                  (strpos($_SERVER['SERVER_NAME'], 'infinityfree') !== false);
+$documentRoot = $_SERVER['DOCUMENT_ROOT'] ?? '';
+$serverName = $_SERVER['SERVER_NAME'] ?? '';
+
+$isInfinityFree = (strpos($documentRoot, 'infinityfree.com') !== false) ||
+                  (strpos($serverName, 'infinityfree') !== false);
 
 if ($isInfinityFree) {
-    // ===== INFINITYFREE =====
-    $host     = "sql302.infinityfree.com";  
-    $db_user  = "if0_41171248";
-    $db_pass  = "vJoJA8PL88TC";
-    $db_name  = "if0_41171248_ptc_database";
+    $host = "sql302.infinityfree.com";
+    $db_user = "if0_41171248";
+    $db_pass = "vJoJA8PL88TC";
+    $db_name = "if0_41171248_ptc_database";
 } else {
-    // ===== LOCALHOST (XAMPP) =====
-    $host     = "localhost";
-    $db_user  = "root";
-    $db_pass  = "";
-    $db_name  = "ptc_system";
+    $host = "localhost";
+    $db_user = "root";
+    $db_pass = "";
+    $db_name = "ptc_system";
 }
 
-// Create connection
-$conn = mysqli_connect($host, $db_user, $db_pass, $db_name);
-
-// Check connection
-if (!$conn) {
-    $error = "Connection Error: " . mysqli_connect_error() . " | Host: " . $host . " | User: " . $db_user;
-    
-    // Log to file
-    file_put_contents("db_error.log", date('Y-m-d H:i:s') . " - " . $error . "\n", FILE_APPEND);
-    
-    // Display in console and page
-    echo "<script>console.error('" . addslashes($error) . "');</script>";
+if (!extension_loaded('mysqli') || !class_exists('mysqli')) {
+    $error = "MySQLi extension is not loaded. PHP=" . PHP_VERSION .
+             " | SAPI=" . php_sapi_name() .
+             " | ini=" . (php_ini_loaded_file() ?: 'none');
+    @file_put_contents(__DIR__ . "/../db_error.log", date('Y-m-d H:i:s') . " - " . $error . "\n", FILE_APPEND);
     die($error);
 }
+
+$conn = new mysqli($host, $db_user, $db_pass, $db_name);
+
+if ($conn->connect_error) {
+    $error = "Connection Error: " . $conn->connect_error . " | Host: " . $host . " | User: " . $db_user;
+    @file_put_contents(__DIR__ . "/../db_error.log", date('Y-m-d H:i:s') . " - " . $error . "\n", FILE_APPEND);
+    die($error);
+}
+
+// Email Configuration for System Notifications
+$emailConfig = [
+    'sender_email' => 'arquero.sofia.tcu@gmail.com',
+    'sender_password' => 'qjpf wvol cpgq tsoa', // Gmail App Password
+    'sender_name' => 'PTC Admissions',
+    'from_address' => 'arquero.sofia.tcu@gmail.com'
+];
 
 ?>

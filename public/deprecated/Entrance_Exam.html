@@ -109,8 +109,8 @@
 </head>
 
 <body>
-
-<div class="exam-container">
+<form action="submit_exam.php" method="post">
+  <div class="exam-container">
 
   <div class="exam-header">
     <h1>ENTRANCE EXAMINATION</h1>
@@ -118,9 +118,9 @@
   </div>
 
   <div class="student-info">
-    <input type="text" placeholder="Full Name">
-    <input type="text" placeholder="Course Applied">
-    <input type="text" placeholder="Date">
+    <input type="text" placeholder="Admission ID" name="admission_id" id="admission_id" required readonly style="background-color: #f0f0f0; color: #666;">
+    <input type="text" placeholder="Full Name" name="fullname" id="fullname" required readonly style="background-color: #f0f0f0; color: #666;">
+    <input type="email" placeholder="Email Address" name="email" id="email" required readonly style="background-color: #f0f0f0; color: #666;">
   </div>
 
   <!-- ENGLISH -->
@@ -129,20 +129,20 @@
   <div class="question">
     <p>1. She ___ like coffee.</p>
     <div class="choices">
-      <label><input type="radio" name="q1"> A. don’t</label>
-      <label><input type="radio" name="q1"> B. doesn’t</label>
-      <label><input type="radio" name="q1"> C. don’t likes</label>
-      <label><input type="radio" name="q1"> D. doesn’t likes</label>
+      <label><input type="radio" name="q1" value="0" required> A. don’t</label>
+      <label><input type="radio" name="q1" value="1"> B. doesn’t</label>
+      <label><input type="radio" name="q1" value="2"> C. don’t likes</label>
+      <label><input type="radio" name="q1" value="3"> D. doesn’t likes</label>
     </div>
   </div>
 
   <div class="question">
     <p>2. What is the synonym of rapid?</p>
     <div class="choices">
-      <label><input type="radio" name="q2"> A. Slow</label>
-      <label><input type="radio" name="q2"> B. Fast</label>
-      <label><input type="radio" name="q2"> C. Weak</label>
-      <label><input type="radio" name="q2"> D. Late</label>
+      <label><input type="radio" name="q2" value="0" required> A. Slow</label>
+      <label><input type="radio" name="q2" value="1"> B. Fast</label>
+      <label><input type="radio" name="q2" value="2"> C. Weak</label>
+      <label><input type="radio" name="q2" value="3"> D. Late</label>
     </div>
   </div>
 
@@ -152,20 +152,20 @@
   <div class="question">
     <p>3. What is 25 × 4?</p>
     <div class="choices">
-      <label><input type="radio" name="q3"> A. 50</label>
-      <label><input type="radio" name="q3"> B. 75</label>
-      <label><input type="radio" name="q3"> C. 100</label>
-      <label><input type="radio" name="q3"> D. 125</label>
+      <label><input type="radio" name="q3" value="0" required> A. 50</label>
+      <label><input type="radio" name="q3" value="1"> B. 75</label>
+      <label><input type="radio" name="q3" value="2"> C. 100</label>
+      <label><input type="radio" name="q3" value="3"> D. 125</label>
     </div>
   </div>
 
   <div class="question">
     <p>4. Solve: 12 + 18 − 5 =</p>
     <div class="choices">
-      <label><input type="radio" name="q4"> A. 20</label>
-      <label><input type="radio" name="q4"> B. 23</label>
-      <label><input type="radio" name="q4"> C. 25</label>
-      <label><input type="radio" name="q4"> D. 30</label>
+      <label><input type="radio" name="q4" value="0" required> A. 20</label>
+      <label><input type="radio" name="q4" value="1"> B. 23</label>
+      <label><input type="radio" name="q4" value="2"> C. 25</label>
+      <label><input type="radio" name="q4" value="3"> D. 30</label>
     </div>
   </div>
 
@@ -175,10 +175,10 @@
   <div class="question">
     <p>5. What organ pumps blood throughout the body?</p>
     <div class="choices">
-      <label><input type="radio" name="q5"> A. Brain</label>
-      <label><input type="radio" name="q5"> B. Lungs</label>
-      <label><input type="radio" name="q5"> C. Heart</label>
-      <label><input type="radio" name="q5"> D. Liver</label>
+      <label><input type="radio" name="q5" value="0" required> A. Brain</label>
+      <label><input type="radio" name="q5" value="1"> B. Lungs</label>
+      <label><input type="radio" name="q5" value="2"> C. Heart</label>
+      <label><input type="radio" name="q5" value="3"> D. Liver</label>
     </div>
   </div>
 
@@ -188,25 +188,56 @@
   <div class="question">
     <p>6. Who is the national hero of the Philippines?</p>
     <div class="choices">
-      <label><input type="radio" name="q6"> A. Andres Bonifacio</label>
-      <label><input type="radio" name="q6"> B. Emilio Aguinaldo</label>
-      <label><input type="radio" name="q6"> C. Jose Rizal</label>
-      <label><input type="radio" name="q6"> D. Apolinario Mabini</label>
+      <label><input type="radio" name="q6" value="0" required> A. Andres Bonifacio</label>
+      <label><input type="radio" name="q6" value="1"> B. Emilio Aguinaldo</label>
+      <label><input type="radio" name="q6" value="2"> C. Jose Rizal</label>
+      <label><input type="radio" name="q6" value="3"> D. Apolinario Mabini</label>
     </div>
   </div>
 
-  <button class="submit-btn">Submit Exam</button>
+  <button type="submit" class="submit-btn">Submit Exam</button>
 
 
 <script>
+// Get URL parameters and populate student info
+function getUrlParameter(name) {
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    var results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+}
+
+// Populate fields when page loads
+window.addEventListener('load', function() {
+    var admissionId = getUrlParameter('admission_id');
+    var fullName = getUrlParameter('name');
+    var email = getUrlParameter('email');
+    
+    if (admissionId) {
+        document.getElementById('admission_id').value = admissionId;
+    }
+    if (fullName) {
+        document.getElementById('fullname').value = fullName;
+    }
+    if (email) {
+        document.getElementById('email').value = email;
+    }
+    
+    // If no parameters in URL, redirect back to login
+    if (!admissionId) {
+        alert('No student information found. Please login again.');
+        window.location.href = 'exam_login.php';
+    }
+});
+
 document.querySelector(".submit-btn").addEventListener("click", function () {
     alert("🎉 Congratulations! You have successfully submitted the exam. The exam results will be available on the website. Kindly check for updates.");
 });
 </script>
 
- 
-</button>
 </div>
+
+</form>
 
 </body>
 </html>

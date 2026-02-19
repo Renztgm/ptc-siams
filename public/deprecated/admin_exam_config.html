@@ -1,0 +1,2337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTC Exam Configuration - Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #2e7d32;
+            font-family: Arial, sans-serif;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            margin: 0;
+            padding: 40px 30px;
+        }
+
+        .panel {
+            background: white;
+            padding: 40px;
+            border-radius: 0;
+            box-shadow: none;
+            margin-bottom: 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .panel:last-child {
+            border-bottom: none;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #2e7d32;
+            padding-bottom: 20px;
+            background: white;
+            margin: -40px -30px 30px -30px;
+            padding: 40px 30px 20px 30px;
+        }
+
+        h1 {
+            color: #2e7d32;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            color: #2e7d32;
+            font-size: 20px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #2e7d32;
+            padding-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f9f9f9;
+            border-left: 4px solid #2e7d32;
+            border-radius: 0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 0;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2e7d32;
+            background-color: #f0f8f0;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 0;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-save {
+            background-color: #2e7d32;
+            color: white;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-save:hover {
+            background-color: #1b5e20;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(46, 125, 50, 0.3);
+        }
+
+        .btn-send {
+            background-color: #ff6b35;
+            color: white;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-send:hover {
+            background-color: #e55a2b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-load {
+            background-color: #fff;
+            color: #2e7d32;
+            border: 2px solid #2e7d32;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-load:hover {
+            background-color: #f0f8f0;
+        }
+
+        .btn-select {
+            background-color: #2196F3;
+            color: white;
+            padding: 8px 15px;
+            font-size: 14px;
+            min-width: auto;
+        }
+
+        .btn-select:hover {
+            background-color: #1976D2;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0;
+            display: none;
+        }
+
+        .alert.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0;
+            color: #1565c0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .students-list {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 0;
+        }
+
+        .student-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .student-item:last-child {
+            border-bottom: none;
+        }
+
+        .student-item input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .student-info {
+            flex: 1;
+            font-size: 13px;
+        }
+
+        .student-info strong {
+            color: #2e7d32;
+        }
+
+        /* Table Styles */
+        .table-wrapper {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 0;
+            overflow: hidden;
+        }
+
+        .students-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .students-table thead {
+            background-color: #2e7d32;
+            color: white;
+            font-weight: bold;
+        }
+
+        .students-table th {
+            padding: 15px;
+            text-align: left;
+            font-size: 14px;
+            border-bottom: 2px solid #2e7d32;
+        }
+
+        .students-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        .students-table tbody tr {
+            transition: background-color 0.2s;
+        }
+
+        .students-table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .students-table tbody tr.selected {
+            background-color: #e8f5e9;
+        }
+
+        .students-table input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-sent {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        /* Filter and Controls */
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 0;
+            flex-wrap: wrap;
+            border: 1px solid #ddd;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-group label {
+            margin: 0;
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .filter-group select {
+            width: 90px;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 0;
+            font-size: 14px;
+        }
+
+        .filter-group select:focus {
+            border-color: #2e7d32;
+            outline: none;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 15px;
+            border: 2px solid #2e7d32;
+            background: white;
+            color: #2e7d32;
+            border-radius: 0;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .filter-btn.active {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .table-info {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .select-actions {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+
+        /* Search and Filter Styling */
+        .search-section {
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 0;
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-section input {
+            flex: 1;
+            min-width: 250px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 0;
+            font-size: 14px;
+        }
+
+        .search-section input:focus {
+            border-color: #2e7d32;
+            outline: none;
+        }
+
+        .search-clear-btn {
+            padding: 10px 15px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 0;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .search-clear-btn:hover {
+            background: #da190b;
+        }
+
+        /* Auto-refresh */
+        .auto-refresh-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 10px;
+            background: #fff9e6;
+            border-left: 4px solid #ffb300;
+            border-radius: 0;
+            font-size: 13px;
+        }
+
+        .auto-refresh-section input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .auto-refresh-section select {
+            width: auto;
+            padding: 5px 10px;
+            border: 2px solid #ddd;
+            border-radius: 0;
+            cursor: pointer;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 0;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            border-bottom: 2px solid #2e7d32;
+            padding: 20px 25px;
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .modal-header h2,
+        .modal-header h3 {
+            color: #2e7d32;
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .modal-body {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: #2e7d32;
+            border-radius: 4px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: #1b5e20;
+        }
+
+        .modal-stats {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 0;
+            margin: 15px 0;
+            border-left: 4px solid #2e7d32;
+        }
+
+        .modal-stats div {
+            margin: 8px 0;
+        }
+
+        .modal-stats strong {
+            color: #2e7d32;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            padding: 15px 25px;
+            border-top: 1px solid #ddd;
+            background: #f9f9f9;
+            flex-shrink: 0;
+        }
+
+        .modal-footer button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 0;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s;
+            min-width: 100px;
+        }
+
+        .modal-btn-cancel {
+            background: #ccc;
+            color: #333;
+        }
+
+        .modal-btn-cancel:hover {
+            background: #bbb;
+        }
+
+        .modal-btn-confirm {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .modal-btn-confirm:hover {
+            background: #1b5e20;
+        }
+
+        /* Email History Log */
+        .history-log {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 0;
+            border: 1px solid #ddd;
+        }
+
+        .history-log h4 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+
+        .history-item {
+            padding: 10px;
+            background: white;
+            margin: 8px 0;
+            border-left: 4px solid #2e7d32;
+            border-radius: 0;
+            font-size: 13px;
+        }
+
+        .history-item .timestamp {
+            color: #666;
+            font-weight: bold;
+        }
+
+        .history-item .email {
+            color: #2e7d32;
+        }
+
+        .history-item .status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 0;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .history-item .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .history-item .status.failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Quick Action Buttons */
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .quick-action-btn {
+            padding: 10px 15px;
+            border: 2px solid #ff9800;
+            background: white;
+            color: #ff9800;
+            border-radius: 0;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .quick-action-btn:hover {
+            background: #ff9800;
+            color: white;
+        }
+
+        .quick-action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #eee;
+            border-radius: 0;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #2e7d32;
+            transition: width 0.3s;
+            text-align: center;
+            color: white;
+            font-size: 12px;
+            line-height: 20px;
+        }
+
+        .current-values {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 0;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        .current-values strong {
+            color: #2e7d32;
+        }
+
+        .preview {
+            background: #fffacd;
+            padding: 15px;
+            border-radius: 0;
+            margin-top: 15px;
+            border: 1px solid #daa520;
+            font-size: 13px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 0;
+            border-left: 4px solid #2e7d32;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Modal Buttons */
+        .btn-cancel {
+            padding: 10px 20px;
+            border: 2px solid #ccc;
+            background: white;
+            color: #333;
+            border-radius: 0;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background: #f0f0f0;
+            border-color: #999;
+        }
+
+        /* Notification Modal */
+        .notification-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .notification-modal.show {
+            display: flex;
+        }
+
+        .notification-content {
+            background: white;
+            padding: 30px;
+            border-radius: 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .notification-content.success {
+            border-left: 5px solid #28a745;
+        }
+
+        .notification-content.error {
+            border-left: 5px solid #dc3545;
+        }
+
+        .notification-content.info {
+            border-left: 5px solid #17a2b8;
+        }
+
+        .notification-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notification-content.success .notification-title {
+            color: #28a745;
+        }
+
+        .notification-content.error .notification-title {
+            color: #dc3545;
+        }
+
+        .notification-content.info .notification-title {
+            color: #17a2b8;
+        }
+
+        .notification-message {
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .notification-close {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .notification-close button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .notification-close .btn-close {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .notification-close .btn-close:hover {
+            background-color: #5a6268;
+        }
+
+        /* History Log Section */
+        #history-log {
+            overflow-x: auto;
+        }
+
+        .history-table-wrapper {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .row {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>📋 PTC Exam Administration Panel</h1>
+            <p class="subtitle">Manage exam schedule, details, and student communications</p>
+        </header>
+
+        <!-- SECTION 1: EXAM CONFIGURATION -->
+        <div class="panel">
+            <h2>📅 Exam Schedule & Details</h2>
+
+            <div class="info-box">
+                ⚠️ <strong>Important:</strong> These settings will be used in admission forms and confirmation emails. Make sure to verify all details are correct.
+            </div>
+
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="examDate">Exam Date:</label>
+                    <input type="date" id="examDate" required>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label>Start Time:</label>
+                        <input type="time" id="examTimeStart" required>
+                    </div>
+                    <div class="form-group">
+                        <label>End Time:</label>
+                        <input type="time" id="examTimeEnd" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label for="examFormat">Exam Format:</label>
+                        <select id="examFormat" required>
+                            <option value="">-- Select Format --</option>
+                            <option value="Online">Online</option>
+                            <option value="In-Person">In-Person</option>
+                            <option value="Hybrid">Hybrid</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="examLocation">Location:</label>
+                        <input type="text" id="examLocation" placeholder="e.g., PTC Grounds, Online, etc." required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="examLink">Exam Link / Meeting URL:</label>
+                    <input type="text" id="examLink" placeholder="https://example.com/exam or [To be provided via email]" required>
+                    <small>Leave as placeholder if not ready yet</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="examDescription">Description / Instructions:</label>
+                    <textarea id="examDescription" placeholder="Additional instructions or notes..."></textarea>
+                </div>
+
+                <div class="current-values" id="current-values" style="display: none;"></div>
+            </div>
+
+            <h3>Email Preview</h3>
+            <div class="preview" id="email-preview"></div>
+
+            <div class="button-group">
+                <button class="btn-load" onclick="loadConfig()">📥 Load Current Settings</button>
+                <button class="btn-save" onclick="saveConfig()">💾 Save Configuration</button>
+            </div>
+        </div>
+
+        <!-- SECTION 2: BULK EMAIL SENDING -->
+        <div class="panel">
+            <h2>📧 Send Exam Links to Students</h2>
+
+            <div class="info-box">
+                <strong>ℹ️ How to use:</strong> Load the list of students, select who should receive the exam link, and send emails in bulk. A progress tracker will show the status of each email. <a href="#" onclick="testAPIConnection(event)" style="color: #2196F3; text-decoration: underline; cursor: pointer;">Test Connection</a>
+            </div>
+
+            <div class="form-section">
+                <div class="section-title">Filter & Student Selection</div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label for="filterProgram">Filter by Program:</label>
+                        <select id="filterProgram">
+                            <option value="">Loading programs...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button class="btn-load" onclick="loadStudents()" style="width: 100%; margin-top: 0;">🔄 Load Students</button>
+                    </div>
+                </div>
+
+                <!-- Filter Controls -->
+                <div class="filter-controls">
+                    <div class="filter-group">
+                        <label for="rowsFilter">Show:</label>
+                        <select id="rowsFilter" onchange="applyRowFilter()">
+                            <option value="10" selected>10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                            <option value="25">25</option>
+                            <option value="30">30</option>
+                            <option value="35">35</option>
+                            <option value="40">40</option>
+                            <option value="45">45</option>
+                            <option value="50">50</option>
+                        </select>
+                        <span>rows</span>
+                    </div>
+                    <div class="filter-buttons">
+                        <button class="filter-btn" onclick="selectAllVisible()">✓ Select Visible</button>
+                        <button class="filter-btn" onclick="deselectAllStudents()">✗ Deselect All</button>
+                    </div>
+                </div>
+
+                <!-- Search Box -->
+                <div class="search-section">
+                    <input type="text" id="searchBox" placeholder="Search by name, email, or admission ID..." onkeyup="applySearch()">
+                    <button class="search-clear-btn" onclick="clearSearch()">✕ Clear</button>
+                </div>
+
+                <!-- Auto-refresh -->
+                <div class="auto-refresh-section">
+                    <input type="checkbox" id="autoRefresh" onchange="toggleAutoRefresh()">
+                    <label for="autoRefresh">Auto-refresh every</label>
+                    <select id="refreshInterval" onchange="updateRefreshInterval()" disabled>
+                        <option value="30000">30 seconds</option>
+                        <option value="60000" selected>1 minute</option>
+                        <option value="300000">5 minutes</option>
+                        <option value="600000">10 minutes</option>
+                    </select>
+                </div>
+
+                <div class="stats" id="stats-container" style="display: none;">
+                    <div class="stat-box">
+                        <div class="stat-number" id="total-count">0</div>
+                        <div class="stat-label">Total Pending</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="selected-count">0</div>
+                        <div class="stat-label">Selected</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="sent-count">0</div>
+                        <div class="stat-label">Already Sent</div>
+                    </div>
+                </div>
+
+                <!-- Students Table -->
+                <div class="table-wrapper" id="table-wrapper" style="display: none;">
+                    <table class="students-table" id="students-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;"><input type="checkbox" id="selectAllCheckbox" onchange="toggleAllStudents()"></th>
+                                <th>Student Name</th>
+                                <th>Email</th>
+                                <th>Program</th>
+                                <th>Admission ID</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-tbody">
+                            <!-- Table rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-info" id="table-info" style="display: none;">
+                    Showing <span id="showing-count">0</span> of <span id="total-pending-count">0</span> pending students
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="section-title">Send Configuration</div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label>
+                            <input type="radio" name="sendMode" value="now" checked onchange="toggleScheduleFields()"> 
+                            Send Now
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="radio" name="sendMode" value="scheduled" onchange="toggleScheduleFields()"> 
+                            Schedule for Later
+                        </label>
+                    </div>
+                </div>
+
+                <div id="schedule-fields" style="display: none;">
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="scheduleDate">Send Date:</label>
+                            <input type="date" id="scheduleDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="scheduleTime">Send Time:</label>
+                            <input type="time" id="scheduleTime">
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        ℹ️ You can schedule emails for today or any future date. Time must be in the future. Server must be running or have a scheduler configured.
+                    </div>
+                </div>
+
+                <button class="btn-send" onclick="openConfirmationModal()" style="width: 100%; margin-top: 15px;">📤 Send Exam Links to Selected Students</button>
+                
+                <button class="btn-load" onclick="testScheduledEmails()" style="width: 100%; margin-top: 10px; background-color: #FFC107; color: black; border-color: #FFC107;">🔧 Test Scheduled Emails & Diagnostics</button>
+
+                <div id="progress-container" style="display: none; margin-top: 20px;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 0%;">
+                            <span id="progress-text">0%</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 13px; color: #666;">
+                        <span id="progress-status">Preparing to send emails...</span>
+                    </div>
+                </div>
+
+                <!-- Quick Action Buttons -->
+                <div class="quick-actions">
+                    <button class="quick-action-btn" onclick="quickActionResendFailed()" id="resend-failed-btn" disabled>
+                        🔄 Resend Failed
+                    </button>
+                    <button class="quick-action-btn" onclick="quickActionSendToNew()" id="send-new-btn" disabled>
+                        ✨ Send to New
+                    </button>
+                    <button class="quick-action-btn" onclick="quickActionVerifyPayment()" id="verify-payment-btn" disabled>
+                        💳 Verify Payment
+                    </button>
+                    <button class="quick-action-btn" onclick="openBatchesModal()" style="background-color: #9c27b0; border-color: #9c27b0;">
+                        📦 View Batches
+                    </button>
+                </div>
+            </div>
+
+            <!-- Email History Log Section -->
+            <div style="margin-top: 40px;">
+                <div style="font-size: 20px; font-weight: bold; color: #2e7d32; margin-bottom: 20px; border-bottom: 2px solid #2e7d32; padding-bottom: 10px;">📧 Email Send History</div>
+                <div class="history-log" id="history-log" style="width: 100%; overflow-x: auto;">
+                    <div style="text-align: center; color: #999; padding: 30px;">
+                        No email history yet. Send emails to see history here.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Modal -->
+    <div id="notificationModal" class="notification-modal">
+        <div class="notification-content success" id="notificationContent">
+            <div class="notification-title" id="notificationTitle">
+                <span id="notificationIcon">✓</span>
+                <span>Success</span>
+            </div>
+            <div class="notification-message" id="notificationMessage">
+                Operation completed successfully.
+            </div>
+            <div class="notification-close">
+                <button class="btn-close" onclick="closeNotification()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Batches Modal -->
+    <div id="batchesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Email Batches Sent</h3>
+            </div>
+            <div class="modal-body" id="batches-content">
+                <div style="text-align: center; color: #999; padding: 30px;">
+                    Loading batches...
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeBatchesModal()" style="background: #e0e0e0; color: #333; flex-grow: 1;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Batch Detail Modal -->
+    <div id="batchDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="batch-detail-title">Batch Details</h3>
+            </div>
+            <div class="modal-body" id="batch-detail-content">
+                <div style="text-align: center; color: #999; padding: 30px;">
+                    Loading batch details...
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeBatchDetailModal()" style="background: #e0e0e0; color: #333; flex-grow: 1;">Back to Batches</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Batch Confirmation Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm Email Sending</h3>
+            </div>
+            <div class="modal-body">
+                <p style="margin: 0 0 15px 0; font-weight: bold; color: #333;">You're about to send exam links to:</p>
+                <div class="stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div class="stat-box" style="padding: 12px; border-left: 4px solid #2e7d32; background: #f9f9f9;">
+                        <div style="font-size: 24px; font-weight: bold; color: #2e7d32; margin-bottom: 5px;" id="modal-selected-count">0</div>
+                        <div style="font-size: 12px; color: #666;">Selected Students</div>
+                    </div>
+                    <div class="stat-box" style="padding: 12px; border-left: 4px solid #ff9800; background: #f9f9f9;">
+                        <div style="font-size: 24px; font-weight: bold; color: #ff9800; margin-bottom: 5px;" id="modal-selected-percentage">0%</div>
+                        <div style="font-size: 12px; color: #666;">of Pending</div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <p style="margin: 0 0 10px 0; font-weight: bold; color: #333; font-size: 13px;">Student List:</p>
+                    <div id="modal-student-preview" style="background: #f5f5f5; padding: 15px; border-radius: 0; max-height: 250px; overflow-y: auto; margin-bottom: 15px; border: 1px solid #ddd;">
+                        <!-- Student list will be populated here -->
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 15px; padding: 12px; background: #e3f2fd; border-left: 4px solid #2196F3;">
+                    <label for="modalAdminPassword" style="margin-bottom: 8px; display: block; font-weight: bold; color: #1565c0;">🔐 Admin Password</label>
+                    <input type="password" id="modalAdminPassword" placeholder="Enter admin password to authorize sending" style="width: 100%; padding: 10px; border: 2px solid #2196F3; background: white; color: #333;">
+                    <small style="color: #0d47a1; display: block; margin-top: 5px;">Required to prevent unauthorized email sending</small>
+                </div>
+                
+                <p style="margin: 0; font-size: 12px; color: #666; padding: 10px; background: #fffde7; border-left: 4px solid #fbc02d;">
+                    <strong>⚠️ Note:</strong> Make sure the exam configuration is correct before proceeding.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeConfirmationModal()" style="background: #e0e0e0; color: #333;">Cancel</button>
+                <button class="btn-send" onclick="proceedWithEmails()" style="flex-grow: 1; background: #2e7d32; color: white;">✓ Confirm & Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // EXAM CONFIGURATION SECTION
+        // ============================================
+
+        window.addEventListener('load', () => {
+            loadConfig();
+            loadProgramsDropdown();
+            loadEmailHistory();
+            // Auto-trigger email scheduler in background
+            triggerEmailScheduler();
+            // Check scheduler every 5 minutes
+            setInterval(triggerEmailScheduler, 5 * 60 * 1000);
+            // Refresh email history every 2 minutes
+            setInterval(loadEmailHistory, 2 * 60 * 1000);
+        });
+
+        // Trigger the email scheduler in background (no user notification)
+        function triggerEmailScheduler() {
+            fetch('../api/run_scheduler.php', {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.processed_batches && data.processed_batches > 0) {
+                    console.log('📧 Scheduler: ' + data.message);
+                    // Reload students list to update email sent status
+                    if (students.length > 0) {
+                        loadStudents();
+                    }
+                } else {
+                    console.log('⏰ Scheduler: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.log('Scheduler check error (non-critical):', error);
+            });
+        }
+
+        function showMessage(message, type = 'success') {
+            const modal = document.getElementById('notificationModal');
+            const content = document.getElementById('notificationContent');
+            const title = document.getElementById('notificationTitle');
+            const msgDiv = document.getElementById('notificationMessage');
+            const icon = document.getElementById('notificationIcon');
+
+            // Remove old class
+            content.classList.remove('success', 'error', 'info');
+            // Add new class
+            content.classList.add(type);
+
+            // Set icon and title
+            switch(type) {
+                case 'success':
+                    icon.textContent = '✓';
+                    title.lastChild.textContent = 'Success';
+                    break;
+                case 'error':
+                    icon.textContent = '✕';
+                    title.lastChild.textContent = 'Error';
+                    break;
+                case 'info':
+                    icon.textContent = 'ℹ';
+                    title.lastChild.textContent = 'Information';
+                    break;
+            }
+
+            // Set message
+            msgDiv.innerHTML = message;
+
+            // Show modal
+            modal.classList.add('show');
+
+            // Auto-close after 6 seconds for success messages
+            if (type === 'success') {
+                setTimeout(() => {
+                    closeNotification();
+                }, 6000);
+            }
+
+            // Log to console as well
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        function closeNotification() {
+            const modal = document.getElementById('notificationModal');
+            modal.classList.remove('show');
+        }
+
+        // Close notification when clicking outside of it
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('notificationModal');
+            if (event.target === modal) {
+                closeNotification();
+            }
+        });
+
+        function loadConfig() {
+            fetch('../api/exam_config.php?json')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('examDate').value = data.exam_date;
+                    document.getElementById('examTimeStart').value = data.exam_start_time;
+                    document.getElementById('examTimeEnd').value = data.exam_end_time;
+                    document.getElementById('examFormat').value = data.exam_format;
+                    document.getElementById('examLocation').value = data.exam_location;
+                    document.getElementById('examLink').value = data.exam_link;
+                    document.getElementById('examDescription').value = data.exam_link_description || '';
+
+                    updateEmailPreview();
+                    showMessage('Settings loaded successfully', 'success');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('Error loading settings: ' + error.message, 'error');
+                });
+        }
+
+        function saveConfig() {
+            const password = prompt('Enter admin password to save changes:');
+            if (!password) return;
+
+            const formData = new FormData();
+            formData.append('action', 'update');
+            formData.append('exam_date', document.getElementById('examDate').value);
+            formData.append('exam_start_time', document.getElementById('examTimeStart').value);
+            formData.append('exam_end_time', document.getElementById('examTimeEnd').value);
+            formData.append('exam_format', document.getElementById('examFormat').value);
+            formData.append('exam_location', document.getElementById('examLocation').value);
+            formData.append('exam_link', document.getElementById('examLink').value);
+            formData.append('exam_link_description', document.getElementById('examDescription').value);
+            formData.append('password', password);
+
+            fetch('../api/exam_config.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('Configuration saved successfully!', 'success');
+                    setTimeout(() => loadConfig(), 500);
+                } else {
+                    showMessage(data.message || 'Failed to save configuration', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('Error saving configuration', 'error');
+            });
+        }
+
+        // Update email preview
+        document.getElementById('examDate').addEventListener('change', updateEmailPreview);
+        document.getElementById('examTimeStart').addEventListener('change', updateEmailPreview);
+        document.getElementById('examTimeEnd').addEventListener('change', updateEmailPreview);
+        document.getElementById('examFormat').addEventListener('change', updateEmailPreview);
+        document.getElementById('examLocation').addEventListener('change', updateEmailPreview);
+        document.getElementById('examLink').addEventListener('change', updateEmailPreview);
+        document.getElementById('examDescription').addEventListener('input', updateEmailPreview);
+
+        function updateEmailPreview() {
+            const date = document.getElementById('examDate').value;
+            const startTime = document.getElementById('examTimeStart').value;
+            const endTime = document.getElementById('examTimeEnd').value;
+            const format = document.getElementById('examFormat').value;
+            const location = document.getElementById('examLocation').value;
+            const link = document.getElementById('examLink').value;
+            const desc = document.getElementById('examDescription').value;
+
+            let preview = `<strong>Exam Details:</strong><br>`;
+            preview += `📅 Date: ${date || '[Not set]'}<br>`;
+            preview += `🕐 Time: ${startTime || '[Not set]'} - ${endTime || '[Not set]'}<br>`;
+            preview += `📍 Format: ${format || '[Not set]'}<br>`;
+            preview += `🏢 Location: ${location || '[Not set]'}<br>`;
+            preview += `🔗 Exam Link: ${escapeHtml(link) || '[Not set]'}<br>`;
+            if (desc) {
+                preview += `ℹ️ Note: ${escapeHtml(desc)}`;
+            }
+
+            document.getElementById('email-preview').innerHTML = preview;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Load programs from database
+        function loadProgramsDropdown() {
+            fetch('../api/get_programs.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.programs.length > 0) {
+                        const select = document.getElementById('filterProgram');
+                        select.innerHTML = '<option value="">-- All Programs --</option>' +
+                            data.programs.map(prog => 
+                                `<option value="${escapeHtml(prog.program_name)}">${escapeHtml(prog.program_name)}</option>`
+                            ).join('');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading programs:', error);
+                    // Fallback to default programs
+                    document.getElementById('filterProgram').innerHTML = `
+                        <option value="">-- All Programs --</option>
+                        <option value="BS Information Technology">BS Information Technology</option>
+                        <option value="BS Business Administration">BS Business Administration</option>
+                        <option value="BS Hospitality Management">BS Hospitality Management</option>
+                        <option value="BS Nursing">BS Nursing</option>
+                        <option value="BS Criminology">BS Criminology</option>
+                        <option value="Associate in Hotel and Restaurant Management">Associate in Hotel and Restaurant Management</option>
+                        <option value="Associate in Office Administration">Associate in Office Administration</option>
+                        <option value="Associate in Education">Associate in Education</option>
+                    `;
+                });
+        }
+
+
+        // ============================================
+        // BULK EMAIL SENDING SECTION
+        // ============================================
+
+        let students = [];
+        let selectedStudents = [];
+        let displayedRows = 10; // Default rows to display
+
+        async function loadStudents() {
+            const program = document.getElementById('filterProgram').value;
+            showMessage('Loading students...', 'info');
+
+            const url = '../api/get_admitted_students.php' + (program ? '?program=' + encodeURIComponent(program) : '');
+
+            try {
+                console.log('Fetching from:', url);
+                const response = await fetch(url);
+                
+                // Check HTTP response status
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+                }
+                
+                let data;
+                const contentType = response.headers.get('content-type');
+                
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    throw new Error(`Invalid response type. Expected JSON, got: ${contentType || 'unknown'}`);
+                }
+
+                console.log('Response data:', data);
+
+                if (data.success && data.students && data.students.length > 0) {
+                    students = data.students || [];
+                    selectedStudents = [];
+                    renderStudentsTable();
+                    document.getElementById('stats-container').style.display = 'grid';
+                    document.getElementById('table-wrapper').style.display = 'block';
+                    document.getElementById('table-info').style.display = 'block';
+
+                    const sent = students.filter(s => s.exam_link_sent).length;
+                    const pending = students.length - sent;
+                    document.getElementById('total-count').textContent = pending;
+                    document.getElementById('sent-count').textContent = sent;
+                    document.getElementById('total-pending-count').textContent = pending;
+                    updateSelectedCount();
+
+                    showMessage(`✓ Loaded ${students.length} students (${pending} pending)`, 'success');
+                } else if (data.success && (!data.students || data.students.length === 0)) {
+                    students = [];
+                    selectedStudents = [];
+                    renderStudentsTable();
+                    document.getElementById('stats-container').style.display = 'grid';
+                    document.getElementById('table-wrapper').style.display = 'none';
+                    document.getElementById('table-info').style.display = 'none';
+                    document.getElementById('total-count').textContent = '0';
+                    document.getElementById('sent-count').textContent = '0';
+                    updateSelectedCount();
+                    const filterText = program ? ` for program "${program}"` : '';
+                    showMessage(`⚠️ No students found${filterText}. Make sure there are admitted students in the system.`, 'error');
+                } else {
+                    const errorMsg = data.message || 'Unknown error occurred';
+                    console.error('API Error:', data);
+                    showMessage(`❌ Failed to load students: ${errorMsg}`, 'error');
+                }
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                showMessage(`❌ Error loading students: ${error.message}. Check browser console for details.`, 'error');
+            }
+        }
+
+        function renderStudentsTable() {
+            const tbody = document.getElementById('students-tbody');
+            tbody.innerHTML = '';
+
+            if (students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No students loaded</td></tr>';
+                return;
+            }
+
+            // Get the row limit from the filter
+            const rowLimit = parseInt(document.getElementById('rowsFilter').value) || displayedRows;
+
+            // Filter out sent emails and limit rows
+            const pendingStudents = students.filter(s => !s.exam_link_sent).slice(0, rowLimit);
+
+            pendingStudents.forEach((student, index) => {
+                const row = document.createElement('tr');
+                const actualIndex = students.findIndex(s => s.full_name === student.full_name && s.email === student.email);
+                const isSelected = selectedStudents.includes(actualIndex);
+
+                row.className = isSelected ? 'selected' : '';
+                row.innerHTML = `
+                    <td>
+                        <input type="checkbox" 
+                               ${isSelected ? 'checked' : ''} 
+                               onchange="toggleStudentSelection(${actualIndex}); updateTableRowStyle();">
+                    </td>
+                    <td>${escapeHtml(student.full_name || student.given_name + ' ' + student.last_name)}</td>
+                    <td>${escapeHtml(student.email)}</td>
+                    <td>${escapeHtml(student.program || 'N/A')}</td>
+                    <td>${escapeHtml(student.admission_id || 'N/A')}</td>
+                    <td>
+                        <span class="status-badge status-pending">Pending</span>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Update the showing count
+            document.getElementById('showing-count').textContent = pendingStudents.length;
+            document.getElementById('total-pending-count').textContent = students.filter(s => !s.exam_link_sent).length;
+        }
+
+        function updateTableRowStyle() {
+            const rows = document.querySelectorAll('#students-tbody tr');
+            rows.forEach((row, index) => {
+                const checkbox = row.querySelector('input[type="checkbox"]');
+                if (checkbox && checkbox.checked) {
+                    row.classList.add('selected');
+                } else {
+                    row.classList.remove('selected');
+                }
+            });
+        }
+
+        function applyRowFilter() {
+            renderStudentsTable();
+        }
+
+        function toggleStudentSelection(index) {
+            if (selectedStudents.includes(index)) {
+                selectedStudents = selectedStudents.filter(i => i !== index);
+            } else {
+                selectedStudents.push(index);
+            }
+            renderStudentsTable();
+            updateSelectedCount();
+        }
+
+        function toggleAllStudents() {
+            const checkbox = document.getElementById('selectAllCheckbox');
+            if (checkbox.checked) {
+                selectAllVisible();
+            } else {
+                deselectAllStudents();
+            }
+        }
+
+        function selectAllVisible() {
+            const rowLimit = parseInt(document.getElementById('rowsFilter').value) || displayedRows;
+            const pendingStudents = students.filter(s => !s.exam_link_sent).slice(0, rowLimit);
+            
+            pendingStudents.forEach(student => {
+                const index = students.findIndex(s => s.full_name === student.full_name && s.email === student.email);
+                if (index !== -1 && !selectedStudents.includes(index)) {
+                    selectedStudents.push(index);
+                }
+            });
+            
+            renderStudentsTable();
+            updateSelectedCount();
+        }
+
+        function deselectAllStudents() {
+            selectedStudents = [];
+            document.getElementById('selectAllCheckbox').checked = false;
+            renderStudentsTable();
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            document.getElementById('selected-count').textContent = selectedStudents.length;
+        }
+
+        async function testAPIConnection(event) {
+            event.preventDefault();
+            showMessage('🔍 Testing API connection...', 'info');
+
+            try {
+                console.log('Testing API endpoint: ../api/get_admitted_students.php');
+                const response = await fetch('../api/get_admitted_students.php');
+                
+                console.log('Response status:', response.status, response.statusText);
+                console.log('Response headers:', Object.fromEntries(response.headers));
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const contentType = response.headers.get('content-type');
+                console.log('Content-Type:', contentType);
+                
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('Response is not JSON:', text.substring(0, 500));
+                    throw new Error(`Expected JSON, got ${contentType || 'unknown'}. Response: ${text.substring(0, 200)}`);
+                }
+                
+                const data = await response.json();
+                console.log('Response JSON:', data);
+                
+                if (data.success) {
+                    const studentCount = data.students ? data.students.length : 0;
+                    showMessage(`✓ API Connection working! Found ${studentCount} students in database.`, 'success');
+                } else {
+                    showMessage(`⚠️ API Error: ${data.message || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                console.error('Connection test failed:', error);
+                showMessage(`❌ Connection test failed: ${error.message}<br><small>Open browser console (F12) for more details</small>`, 'error');
+            }
+        }
+
+        async function sendEmailsToBulk() {
+            if (selectedStudents.length === 0) {
+                showMessage('Please select at least one student', 'error');
+                return;
+            }
+
+            const password = document.getElementById('modalAdminPassword').value;
+            if (!password) {
+                showMessage('Please enter admin password', 'error');
+                return;
+            }
+
+            const emails = selectedStudents.map(i => students[i].email);
+            const sendMode = document.querySelector('input[name="sendMode"]:checked').value;
+            let scheduleDate = null;
+            let scheduleTime = null;
+
+            if (sendMode === 'scheduled') {
+                scheduleDate = document.getElementById('scheduleDate').value;
+                scheduleTime = document.getElementById('scheduleTime').value;
+
+                if (!scheduleDate || !scheduleTime) {
+                    showMessage('Please select a date and time for scheduled sending', 'error');
+                    return;
+                }
+
+                // Validate that scheduled time is in the future
+                const scheduledDateTime = new Date(scheduleDate + 'T' + scheduleTime);
+                if (scheduledDateTime <= new Date()) {
+                    showMessage('Scheduled time must be in the future', 'error');
+                    return;
+                }
+            }
+
+            document.getElementById('progress-container').style.display = 'block';
+
+            try {
+                const formData = new FormData();
+                formData.append('action', sendMode === 'now' ? 'send_emails' : 'schedule_emails');
+                formData.append('emails', JSON.stringify(emails));
+                formData.append('password', password);
+                
+                if (sendMode === 'scheduled') {
+                    formData.append('schedule_date', scheduleDate);
+                    formData.append('schedule_time', scheduleTime);
+                }
+
+                const response = await fetch('../api/send_exam_link_bulk.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (sendMode === 'now') {
+                        // Update sent count and reload students
+                        setTimeout(() => {
+                            loadStudents();
+                            document.getElementById('progress-container').style.display = 'none';
+                            showMessage(`✓ Successfully sent ${data.sent} emails!`, 'success');
+                        }, 1000);
+                    } else {
+                        document.getElementById('progress-container').style.display = 'none';
+                        const dateStr = new Date(scheduleDate + 'T' + scheduleTime).toLocaleString();
+                        showMessage(`✓ ${emails.length} emails scheduled for ${dateStr}`, 'success');
+                        // Clear the schedule fields
+                        document.getElementById('modalAdminPassword').value = '';
+                        document.getElementById('scheduleDate').value = '';
+                        document.getElementById('scheduleTime').value = '';
+                    }
+                } else {
+                    document.getElementById('progress-container').style.display = 'none';
+                    showMessage(data.message || 'Failed to process request', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('progress-container').style.display = 'none';
+                showMessage('Error processing request: ' + error.message, 'error');
+            }
+        }
+
+        function toggleScheduleFields() {
+            const mode = document.querySelector('input[name="sendMode"]:checked').value;
+            const fields = document.getElementById('schedule-fields');
+            if (mode === 'scheduled') {
+                fields.style.display = 'block';
+                // Set minimum date to today
+                const today = new Date();
+                document.getElementById('scheduleDate').min = today.toISOString().split('T')[0];
+            } else {
+                fields.style.display = 'none';
+            }
+        }
+
+        async function testScheduledEmails() {
+            showMessage('🔍 Testing scheduled emails system...', 'info');
+
+            try {
+                // First get diagnostics
+                const diagResponse = await fetch('../api/test_scheduled_emails.php');
+                const diagnostics = await diagResponse.json();
+
+                if (!diagnostics.success) {
+                    showMessage(`❌ Diagnostic failed: ${diagnostics.message}`, 'error');
+                    return;
+                }
+
+                // Build detailed report
+                let reportHtml = `<strong>📊 Scheduled Emails Diagnostic Report</strong><br><br>`;
+                
+                reportHtml += `<strong>System Status:</strong><br>`;
+                reportHtml += `• Database Connected: ${diagnostics.diagnostics.database_connected ? '✓ Yes' : '❌ No'}<br>`;
+                reportHtml += `• Scheduled Directory: ${diagnostics.diagnostics.scheduled_dir_exists ? '✓ Exists' : '⚠️ Created / Not Found'}<br>`;
+                reportHtml += `• Total Students in System: ${diagnostics.diagnostics.total_students || 0}<br><br>`;
+
+                reportHtml += `<strong>Scheduled Emails:</strong><br>`;
+                reportHtml += `• Pending Batches: ${diagnostics.diagnostics.scheduled_files_count}<br>`;
+
+                if (diagnostics.diagnostics.scheduled_files.length > 0) {
+                    reportHtml += `<br><strong>Batch Details:</strong><br>`;
+                    diagnostics.diagnostics.scheduled_files.forEach(file => {
+                        reportHtml += `<br>📧 ${file.batch_id}<br>`;
+                        reportHtml += `&nbsp;&nbsp;Status: ${file.status}<br>`;
+                        reportHtml += `&nbsp;&nbsp;Scheduled: ${file.scheduled_for}<br>`;
+                        reportHtml += `&nbsp;&nbsp;Time Remaining: ${file.time_remaining_seconds}s<br>`;
+                        reportHtml += `&nbsp;&nbsp;Emails: ${file.email_count}<br>`;
+                        reportHtml += `&nbsp;&nbsp;Ready to Send: ${file.should_send ? '✓ YES' : '⏳ Not yet'}<br>`;
+                    });
+                } else {
+                    reportHtml += `<br>No scheduled email batches found.<br>`;
+                }
+
+                // Now run the scheduler
+                reportHtml += `<br><strong>Running Scheduler...</strong><br>`;
+                const schedulerResponse = await fetch('../api/run_scheduler.php');
+                const schedulerResult = await schedulerResponse.json();
+
+                reportHtml += `✓ Scheduler executed<br>`;
+                reportHtml += `• Batches Processed: ${schedulerResult.processed_batches}<br>`;
+                reportHtml += `• Emails Sent: ${schedulerResult.sent}<br>`;
+                reportHtml += `• Failed: ${schedulerResult.failed}<br>`;
+                reportHtml += `• Message: ${schedulerResult.message}<br>`;
+
+                showMessage(reportHtml, 'success');
+                console.log('Full diagnostics:', diagnostics);
+                console.log('Scheduler result:', schedulerResult);
+
+            } catch (error) {
+                console.error('Test error:', error);
+                showMessage(`❌ Test failed: ${error.message}<br><small>Check browser console for details</small>`, 'error');
+            }
+        }
+
+        // ============================================
+        // SEARCH FUNCTIONALITY
+        // ============================================
+
+        function applySearch() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase().trim();
+            const tbody = document.getElementById('students-tbody');
+            const rows = tbody.querySelectorAll('tr');
+
+            if (!searchTerm) {
+                rows.forEach(row => row.style.display = '');
+                document.getElementById('showing-count').textContent = students.filter(s => !s.exam_link_sent).length;
+                return;
+            }
+
+            let visibleCount = 0;
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 5) {
+                    const name = cells[1].textContent.toLowerCase();
+                    const email = cells[2].textContent.toLowerCase();
+                    const admissionId = cells[4].textContent.toLowerCase();
+
+                    if (name.includes(searchTerm) || email.includes(searchTerm) || admissionId.includes(searchTerm)) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            });
+
+            document.getElementById('showing-count').textContent = visibleCount;
+        }
+
+        function clearSearch() {
+            document.getElementById('searchBox').value = '';
+            applySearch();
+        }
+
+        // ============================================
+        // AUTO-REFRESH FUNCTIONALITY
+        // ============================================
+
+        let autoRefreshInterval = null;
+
+        function toggleAutoRefresh() {
+            const checkbox = document.getElementById('autoRefresh');
+            const select = document.getElementById('refreshInterval');
+
+            if (checkbox.checked) {
+                select.disabled = false;
+                updateRefreshInterval();
+                showMessage('✓ Auto-refresh enabled', 'success');
+            } else {
+                select.disabled = true;
+                if (autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                    autoRefreshInterval = null;
+                }
+                showMessage('Auto-refresh disabled', 'info');
+            }
+        }
+
+        function updateRefreshInterval() {
+            if (!document.getElementById('autoRefresh').checked) return;
+
+            // Clear existing interval
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+
+            // Get interval value in milliseconds
+            const interval = parseInt(document.getElementById('refreshInterval').value);
+
+            // Set new interval
+            autoRefreshInterval = setInterval(() => {
+                const currentSearch = document.getElementById('searchBox').value;
+                loadStudents().then(() => {
+                    if (currentSearch) {
+                        setTimeout(() => applySearch(), 100);
+                    }
+                });
+            }, interval);
+
+            showMessage(`Auto-refresh set to every ${formatInterval(interval)}`, 'info');
+        }
+
+        function formatInterval(ms) {
+            if (ms >= 60000) {
+                const minutes = ms / 60000;
+                return `${minutes} minute${minutes > 1 ? 's' : ''}`;
+            }
+            const seconds = ms / 1000;
+            return `${seconds} second${seconds > 1 ? 's' : ''}`;
+        }
+
+        // ============================================
+        // BATCH CONFIRMATION MODAL
+        // ============================================
+
+        let pendingEmails = null;
+
+        function openConfirmationModal() {
+            if (selectedStudents.length === 0) {
+                showMessage('Please select at least one student', 'error');
+                return;
+            }
+
+            const totalPending = students.filter(s => !s.exam_link_sent).length;
+            const percentage = totalPending > 0 ? Math.round((selectedStudents.length / totalPending) * 100) : 0;
+
+            // Update modal with selected student info
+            document.getElementById('modal-selected-count').textContent = selectedStudents.length;
+            document.getElementById('modal-selected-percentage').textContent = percentage + '%';
+
+            // Build student preview list with better styling
+            const previewHtml = selectedStudents.map(index => {
+                const student = students[index];
+                return `<div style="padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="flex-grow: 1;">
+                        <div style="font-weight: bold; color: #2e7d32; margin-bottom: 3px;">${escapeHtml(student.full_name || student.given_name + ' ' + student.last_name)}</div>
+                        <div style="color: #666; font-size: 12px;">📧 ${escapeHtml(student.email)}</div>
+                    </div>
+                    <span style="background: #e8f5e9; color: #155724; padding: 4px 8px; border-radius: 0; font-size: 11px; font-weight: bold; margin-left: 10px; white-space: nowrap;">🆔 ${escapeHtml(student.admission_id || 'N/A')}</span>
+                </div>`;
+            }).join('');
+
+            document.getElementById('modal-student-preview').innerHTML = previewHtml;
+
+            // Show modal
+            const modal = document.getElementById('confirmationModal');
+            modal.classList.add('show');
+            modal.style.display = 'flex';
+        }
+
+        function closeConfirmationModal() {
+            const modal = document.getElementById('confirmationModal');
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+            pendingEmails = null;
+        }
+
+        function proceedWithEmails() {
+            closeConfirmationModal();
+            sendEmailsToBulk();
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('confirmationModal');
+            if (event.target === modal) {
+                closeConfirmationModal();
+            }
+        }
+
+        // ============================================
+        // EMAIL HISTORY LOG
+        // ============================================
+
+        async function loadEmailHistory() {
+            try {
+                const response = await fetch('../api/get_email_history.php');
+                const data = await response.json();
+
+                if (data.success && data.emails && data.emails.length > 0) {
+                    let tableHtml = `
+                    <table class="students-table" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background-color: #f5f5f5; border-bottom: 2px solid #2e7d32;">
+                                <th style="padding: 12px; text-align: left; font-weight: bold; color: #333;">Student Name</th>
+                                <th style="padding: 12px; text-align: left; font-weight: bold; color: #333;">Email</th>
+                                <th style="padding: 12px; text-align: left; font-weight: bold; color: #333;">Admission ID</th>
+                                <th style="padding: 12px; text-align: left; font-weight: bold; color: #333;">Program</th>
+                                <th style="padding: 12px; text-align: center; font-weight: bold; color: #333;">Status</th>
+                                <th style="padding: 12px; text-align: left; font-weight: bold; color: #333;">Sent Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                    `;
+
+                    data.emails.slice(0, 50).forEach((email, index) => {
+                        // Parse timestamp
+                        let timestamp = 'Unknown date';
+                        try {
+                            if (email.sent_at) {
+                                const date = new Date(email.sent_at);
+                                timestamp = date.toLocaleString();
+                            }
+                        } catch (e) {
+                            timestamp = email.sent_at || 'Unknown date';
+                        }
+
+                        const studentName = email.student_name || email.full_name || 'Unknown Student';
+                        const rowColor = index % 2 === 0 ? '#ffffff' : '#f9f9f9';
+
+                        tableHtml += `
+                        <tr style="background-color: ${rowColor}; border-bottom: 1px solid #eee; height: 50px;">
+                            <td style="padding: 12px; color: #333;"><strong>${escapeHtml(studentName)}</strong></td>
+                            <td style="padding: 12px; color: #666;">${escapeHtml(email.recipient_email || 'Unknown')}</td>
+                            <td style="padding: 12px; color: #666;"><code style="background: #f0f0f0; padding: 3px 6px; border-radius: 3px;">${escapeHtml(email.admission_id || 'N/A')}</code></td>
+                            <td style="padding: 12px; color: #666;">${escapeHtml(email.program || 'N/A')}</td>
+                            <td style="padding: 12px; text-align: center;">
+                                <span style="background: #d4edda; color: #155724; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: bold;">✓ Sent</span>
+                            </td>
+                            <td style="padding: 12px; color: #999; font-size: 13px;">${timestamp}</td>
+                        </tr>
+                        `;
+                    });
+
+                    tableHtml += `
+                        </tbody>
+                    </table>
+                    `;
+
+                    document.getElementById('history-log').innerHTML = tableHtml;
+                } else {
+                    document.getElementById('history-log').innerHTML = `<div style="text-align: center; color: #999; padding: 30px;">
+                        📭 No email history yet. Send exam links to see history here.
+                    </div>`;
+                }
+            } catch (error) {
+                console.error('Error loading history:', error);
+                document.getElementById('history-log').innerHTML = `<div style="text-align: center; color: #c00; padding: 20px;">
+                    ⚠️ Unable to load email history: ${error.message}
+                </div>`;
+            }
+        }
+
+        // ============================================
+        // EMAIL BATCHES MODAL
+        // ============================================
+
+        async function openBatchesModal() {
+            const modal = document.getElementById('batchesModal');
+            modal.classList.add('show');
+            modal.style.display = 'flex';
+            
+            // Load batches
+            await loadEmailBatches();
+        }
+
+        function closeBatchesModal() {
+            const modal = document.getElementById('batchesModal');
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+        }
+
+        async function loadEmailBatches() {
+            try {
+                const response = await fetch('../api/get_scheduled_emails.php');
+                const data = await response.json();
+
+                if (data.schedules && data.schedules.length > 0) {
+                    let tableHtml = `
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px;">
+                            <div class="stat-box" style="padding: 15px; background: #e8f5e9; border-left: 4px solid #4caf50;">
+                                <div style="font-size: 28px; font-weight: bold; color: #4caf50;">${data.stats.sent || 0}</div>
+                                <div style="font-size: 12px; color: #666; margin-top: 5px;">Sent Batches</div>
+                            </div>
+                            <div class="stat-box" style="padding: 15px; background: #fff3e0; border-left: 4px solid #ff9800;">
+                                <div style="font-size: 28px; font-weight: bold; color: #ff9800;">${data.stats.pending || 0}</div>
+                                <div style="font-size: 12px; color: #666; margin-top: 5px;">Pending Batches</div>
+                            </div>
+                            <div class="stat-box" style="padding: 15px; background: #ffebee; border-left: 4px solid #f44336;">
+                                <div style="font-size: 28px; font-weight: bold; color: #f44336;">${data.stats.failed || 0}</div>
+                                <div style="font-size: 12px; color: #666; margin-top: 5px;">Failed Batches</div>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="students-table" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background-color: #f5f5f5; border-bottom: 2px solid #9c27b0;">
+                                <th style="padding: 12px; text-align: left; font-weight: bold; color: #333;">Batch ID</th>
+                                <th style="padding: 12px; text-align: center; font-weight: bold; color: #333;">Emails</th>
+                                <th style="padding: 12px; text-align: left; font-weight: bold; color: #333;">Status</th>
+                                <th style="padding: 12px; text-align: left; font-weight: bold; color: #333;">Scheduled</th>
+                                <th style="padding: 12px; text-align: left; font-weight: bold; color: #333;">Sent</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                    `;
+
+                    data.schedules.forEach((batch, index) => {
+                        const rowColor = index % 2 === 0 ? '#ffffff' : '#f9f9f9';
+                        
+                        // Format dates
+                        let scheduledTime = 'N/A';
+                        let sentTime = 'N/A';
+                        try {
+                            if (batch.scheduled_time) {
+                                const date = new Date(batch.scheduled_time);
+                                scheduledTime = date.toLocaleString();
+                            }
+                            if (batch.sent_at) {
+                                const date = new Date(batch.sent_at);
+                                sentTime = date.toLocaleString();
+                            }
+                        } catch (e) {
+                            // Keep default values
+                        }
+
+                        // Status badge
+                        let statusBadge = '';
+                        let statusColor = '';
+                        if (batch.status === 'sent') {
+                            statusBadge = '✓ Sent';
+                            statusColor = '#4caf50';
+                        } else if (batch.status === 'pending') {
+                            statusBadge = '⏱ Pending';
+                            statusColor = '#ff9800';
+                        } else if (batch.status === 'failed') {
+                            statusBadge = '✕ Failed';
+                            statusColor = '#f44336';
+                        } else {
+                            statusBadge = batch.status;
+                            statusColor = '#999';
+                        }
+
+                        tableHtml += `
+                        <tr style="background-color: ${rowColor}; border-bottom: 1px solid #eee; height: 50px;">
+                            <td style="padding: 12px; color: #333;"><button style="background: none; border: none; color: #9c27b0; cursor: pointer; font-weight: bold; text-decoration: underline; padding: 0;" onclick="openBatchDetailModal('${escapeHtml(batch.batch_id)}')">📬 ${escapeHtml(batch.batch_id)}</button></td>
+                            <td style="padding: 12px; text-align: center; color: #666;"><strong>${batch.email_count}</strong></td>
+                            <td style="padding: 12px;">
+                                <span style="background: ${statusColor}22; color: ${statusColor}; padding: 4px 12px; border-radius: 0; font-size: 12px; font-weight: bold;">${statusBadge}</span>
+                            </td>
+                            <td style="padding: 12px; color: #999; font-size: 13px;">${scheduledTime}</td>
+                            <td style="padding: 12px; color: #999; font-size: 13px;">${sentTime}</td>
+                        </tr>
+                        `;
+                    });
+
+                    tableHtml += `
+                        </tbody>
+                    </table>
+                    `;
+
+                    document.getElementById('batches-content').innerHTML = tableHtml;
+                } else {
+                    document.getElementById('batches-content').innerHTML = `<div style="text-align: center; color: #999; padding: 30px;">
+                        📦 No email batches yet. Schedule emails to see them here.
+                    </div>`;
+                }
+            } catch (error) {
+                console.error('Error loading batches:', error);
+                document.getElementById('batches-content').innerHTML = `<div style="text-align: center; color: #c00; padding: 20px;">
+                    ⚠️ Unable to load email batches: ${error.message}
+                </div>`;
+            }
+        }
+
+        // Close batches modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('batchesModal');
+            const detailModal = document.getElementById('batchDetailModal');
+            if (event.target === modal) {
+                closeBatchesModal();
+            }
+            if (event.target === detailModal) {
+                closeBatchDetailModal();
+            }
+        });
+
+        // ============================================
+        // BATCH DETAIL MODAL
+        // ============================================
+
+        async function openBatchDetailModal(batchId) {
+            const modal = document.getElementById('batchDetailModal');
+            modal.classList.add('show');
+            modal.style.display = 'flex';
+            
+            document.getElementById('batch-detail-title').textContent = 'Batch ' + batchId;
+            
+            // Load batch details
+            await loadBatchDetails(batchId);
+        }
+
+        function closeBatchDetailModal() {
+            const modal = document.getElementById('batchDetailModal');
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+        }
+
+        async function loadBatchDetails(batchId) {
+            try {
+                const response = await fetch('../api/get_scheduled_emails.php');
+                const data = await response.json();
+
+                const batch = data.schedules.find(b => b.batch_id === batchId);
+                
+                if (!batch) {
+                    document.getElementById('batch-detail-content').innerHTML = '<div style="text-align: center; color: #c00; padding: 30px;">Batch not found</div>';
+                    return;
+                }
+
+                // Get student names for these emails
+                const emailsParam = batch.emails.join(',');
+                const studentResponse = await fetch('../api/get_student_names.php?emails=' + encodeURIComponent(emailsParam));
+                const studentData = await studentResponse.json();
+                const studentMap = {};
+                if (studentData.students) {
+                    studentData.students.forEach(student => {
+                        studentMap[student.email] = student.full_name;
+                    });
+                }
+
+                let tableHtml = '<div style="margin-bottom: 20px;"><p style="margin: 0 0 15px 0; color: #666; font-size: 14px;"><strong>Batch ID:</strong> ' + escapeHtml(batch.batch_id) + ' | <strong>Status:</strong> ';
+                
+                if (batch.status === 'sent') {
+                    tableHtml += '<span style="background: #4caf5033; color: #4caf50; font-weight: bold; padding: 4px 8px;">✓ Sent</span>';
+                } else if (batch.status === 'pending') {
+                    tableHtml += '<span style="background: #ff980033; color: #ff9800; font-weight: bold; padding: 4px 8px;">⏱ Pending</span>';
+                } else if (batch.status === 'failed') {
+                    tableHtml += '<span style="background: #f4433633; color: #f44336; font-weight: bold; padding: 4px 8px;">✕ Failed</span>';
+                }
+                
+                tableHtml += '</p></div><table class="students-table" style="width: 100%; border-collapse: collapse;"><thead><tr style="background-color: #f5f5f5; border-bottom: 2px solid #9c27b0;"><th style="padding: 12px; text-align: left; font-weight: bold; color: #333;">Student Name</th><th style="padding: 12px; text-align: left; font-weight: bold; color: #333;">Email</th></tr></thead><tbody>';
+
+                batch.emails.forEach((email, index) => {
+                    const rowColor = index % 2 === 0 ? '#ffffff' : '#f9f9f9';
+                    const studentName = studentMap[email] || 'Unknown Student';
+                    
+                    tableHtml += '<tr style="background-color: ' + rowColor + '; border-bottom: 1px solid #eee; height: 50px;"><td style="padding: 12px; color: #333;"><strong>' + escapeHtml(studentName) + '</strong></td><td style="padding: 12px; color: #666;">' + escapeHtml(email) + '</td></tr>';
+                });
+
+                tableHtml += '</tbody></table>';
+
+                document.getElementById('batch-detail-content').innerHTML = tableHtml;
+            } catch (error) {
+                console.error('Error loading batch details:', error);
+                document.getElementById('batch-detail-content').innerHTML = '<div style="text-align: center; color: #c00; padding: 20px;">⚠️ Unable to load batch details: ' + error.message + '</div>';
+            }
+        }
+
+        // ============================================
+        // QUICK ACTION BUTTONS
+        // ============================================
+
+        function quickActionResendFailed() {
+            // Find students with failed email sends
+            const failedStudents = students.filter((student, index) => {
+                // Check if student has failed status (you may need to add a 'failed' flag to database)
+                return student.exam_link_sent === 'failed' || student.exam_link_sent === 0;
+            });
+
+            if (failedStudents.length === 0) {
+                showMessage('✓ No failed emails found. All pending students are ready!', 'info');
+                return;
+            }
+
+            // Select all failed students
+            selectedStudents = [];
+            failedStudents.forEach(student => {
+                const index = students.indexOf(student);
+                if (index !== -1) {
+                    selectedStudents.push(index);
+                }
+            });
+
+            renderStudentsTable();
+            updateSelectedCount();
+            showMessage(`✓ Selected ${failedStudents.length} students with failed sends. Ready to resend!`, 'success');
+        }
+
+        function quickActionSendToNew() {
+            // Find students admitted since last email batch (in the last 24 hours)
+            const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+            const newStudents = students.filter(student => {
+                const admissionDate = new Date(student.submission_date || student.created_at);
+                return admissionDate > oneDayAgo && !student.exam_link_sent;
+            });
+
+            if (newStudents.length === 0) {
+                showMessage('⚠️ No new students found in the last 24 hours', 'info');
+                return;
+            }
+
+            // Select all new students
+            selectedStudents = [];
+            newStudents.forEach(student => {
+                const index = students.indexOf(student);
+                if (index !== -1) {
+                    selectedStudents.push(index);
+                }
+            });
+
+            renderStudentsTable();
+            updateSelectedCount();
+            showMessage(`✓ Selected ${newStudents.length} new students. Ready to send!`, 'success');
+        }
+
+        function quickActionVerifyPayment() {
+            showMessage('💳 Payment verification feature coming soon. For now, contact the accounting department.', 'info');
+            // TODO: Integrate with payment system when available
+            // This is a placeholder for future integration with payment gateway
+        }
+    </script>
+
+</body>
+</html>

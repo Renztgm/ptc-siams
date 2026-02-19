@@ -1,6 +1,6 @@
 <?php
 session_start();
-include "../config/db_config.php"; // Use proper config with InfinityFree support
+require_once __DIR__ . "/../config/db_config.php"; // Use proper config with InfinityFree support
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username']; //

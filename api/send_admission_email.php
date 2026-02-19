@@ -1,4 +1,7 @@
 <?php
+// Set JSON response header at the very beginning before any output
+header('Content-Type: application/json; charset=UTF-8');
+
 // Database connection - Use environment detection like db_config.php
 // Detect environment
 $isInfinityFree = (strpos($_SERVER['DOCUMENT_ROOT'], 'infinityfree.com') !== false) || 
@@ -18,11 +21,12 @@ if ($isInfinityFree) {
     $db_name  = "ptc_system";
 }
 
-$conn = mysqli_connect($host, $db_user, $db_pass, $db_name);
+$conn = @mysqli_connect($host, $db_user, $db_pass, $db_name);
 
 if (!$conn) {
-    error_log("Database connection failed: " . mysqli_connect_error() . " | Host: " . $host);
-    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . mysqli_connect_error()]);
+    $error_msg = mysqli_connect_error() ?: 'Unknown database error';
+    error_log("Database connection failed: " . $error_msg . " | Host: " . $host);
+    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $error_msg]);
     exit;
 }
 
@@ -412,6 +416,6 @@ function logAdmissionToDatabase($conn, $givenName, $middleName, $lastName, $addr
 
 // Close database connection
 if ($conn) {
-    $conn->close();
+    mysqli_close($conn);
 }
 ?>
