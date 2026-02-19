@@ -29,58 +29,59 @@ function sendExamResultEmail($fullname, $email, $admission_id, $score, $totalQue
     <html>
     <head>
         <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background-color: #1b5e20; color: white; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
-            .header h1 { margin: 0; font-size: 24px; }
-            .content { background-color: #f5f5f5; padding: 20px; border-radius: 5px; }
-            .result { font-size: 18px; font-weight: bold; padding: 15px; margin: 20px 0; border-radius: 5px; }
-            .result.passed { background-color: #d4edda; color: #155724; border-left: 5px solid #155724; }
-            .result.failed { background-color: #f8d7da; color: #721c24; border-left: 5px solid #721c24; }
-            .info { margin: 15px 0; }
-            .info ul { margin: 10px 0; padding-left: 20px; }
-            .info li { margin: 8px 0; }
-            .footer { font-size: 12px; color: #999; margin-top: 30px; border-top: 1px solid #ddd; padding-top: 15px; }
-            .divider { border-top: 1px solid #ddd; margin: 20px 0; }
+            body { font-family: Arial, sans-serif; color: #333; }
+            .header { background-color: #2e7d32; color: white; padding: 20px; text-align: center; }
+            .content { padding: 20px; max-width: 600px; margin: 0 auto; }
+            .result-box { background-color: " . ($result === 'Passed' ? '#d4edda' : '#f8d7da') . "; border: 2px solid " . ($result === 'Passed' ? '#28a745' : '#dc3545') . "; padding: 20px; margin: 20px 0; border-radius: 5px; text-align: center; }
+            .result-text { font-size: 20px; font-weight: bold; color: " . ($result === 'Passed' ? '#155724' : '#721c24') . "; }
+            .details { background-color: #f9f9f9; border-left: 4px solid #2e7d32; padding: 15px; margin: 15px 0; }
+            .details ul { margin: 10px 0; padding-left: 20px; list-style: none; }
+            .details li { margin: 8px 0; }
+            .next-steps { background-color: #f9f9f9; border-left: 4px solid #2e7d32; padding: 15px; margin: 15px 0; }
+            .footer { background-color: #f0f0f0; padding: 15px; text-align: center; font-size: 12px; }
         </style>
     </head>
     <body>
-        <div class='container'>
-            <div class='header'>
-                <h1>PTC SIAMS - Entrance Exam Result</h1>
+        <div class='header'>
+            <h1>PTC Entrance Exam Results</h1>
+            <p>Your Official Score Report</p>
+        </div>
+        <div class='content'>
+            <p>Dear <strong>" . htmlspecialchars($fullname) . "</strong>,</p>
+            <p>Thank you for taking the PTC Entrance Examination. Your results are now available.</p>
+            
+            <div class='result-box'>
+                <p class='result-text'>" . ($result === 'Passed' ? '✓ PASSED' : '✗ DID NOT PASS') . "</p>
+                <p>" . $result_message . "</p>
             </div>
             
-            <div class='content'>
-                <p>Dear <strong>" . htmlspecialchars($fullname) . "</strong>,</p>
-                
-                <div class='result " . strtolower($result) . "'>
-                    " . $result_message . "
-                </div>
-                
-                <div class='divider'></div>
-                
-                <div class='info'>
-                    <p><strong>📋 Exam Details:</strong></p>
-                    <ul>
-                        <li><strong>Admission ID:</strong> " . htmlspecialchars($admission_id) . "</li>
-                        <li><strong>Score:</strong> " . $score . " out of " . $totalQuestions . "</li>
-                        <li><strong>Percentage:</strong> " . $percentage . "%</li>
-                        <li><strong>Passing Score Required:</strong> 75%</li>
-                        <li><strong>Result:</strong> <strong>" . $result . "</strong></li>
-                    </ul>
-                </div>
-                
-                <div class='divider'></div>
-                
-                <p><strong>📧 Next Steps:</strong></p>
-                <p>If you have any questions or concerns about your results, please contact the admissions office at admissions@ptc.edu.ph or call the main office.</p>
-                
-                <div class='footer'>
-                    <p>This is an automated email from PTC SIAMS. Please do not reply to this email.</p>
-                    <p><strong>Philippine Technical College</strong><br>
-                    Student Information and Admission Management System (SIAMS)</p>
-                </div>
+            <div class='details'>
+                <h3>📋 Your Exam Results:</h3>
+                <ul>
+                    <li><strong>Admission ID:</strong> " . htmlspecialchars($admission_id) . "</li>
+                    <li><strong>Score Achieved:</strong> " . $score . " out of " . $totalQuestions . "</li>
+                    <li><strong>Percentage:</strong> " . $percentage . "%</li>
+                    <li><strong>Passing Score Required:</strong> 75%</li>
+                </ul>
             </div>
+            
+            <div class='next-steps'>
+                <h3>📧 What's Next?</h3>
+                " . ($result === 'Passed' 
+                    ? "<p>Congratulations on your passing score! The admissions office will contact you shortly with information about program enrollment and next steps.</p>"
+                    : "<p>If you wish to retake the examination, please contact the admissions office to schedule another attempt. We encourage you to prepare thoroughly for your next examination.</p>") . "
+                <p><strong>Questions?</strong> Contact the PTC Admissions Office:</p>
+                <ul style='margin: 10px 0; padding-left: 20px;'>
+                    <li>Email: admissions@ptc.edu.ph</li>
+                    <li>Phone: (02) 8614-4944</li>
+                </ul>
+            </div>
+            
+            <p style='margin-top: 30px;'>Best regards,<br><strong>PTC Admissions Team</strong></p>
+        </div>
+        <div class='footer'>
+            <p>&copy; 2026 Pateros Technological College. All rights reserved.</p>
+            <p>This is an automated email. Please do not reply to this address.</p>
         </div>
     </body>
     </html>
@@ -292,51 +293,59 @@ function getExamResultEmailBody($fullname, $email, $admission_id, $score, $total
     <html>
     <head>
         <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background-color: #1b5e20; color: white; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
-            .header h1 { margin: 0; font-size: 24px; }
-            .content { background-color: #f5f5f5; padding: 20px; border-radius: 5px; }
-            .result { font-size: 18px; font-weight: bold; padding: 15px; margin: 20px 0; border-radius: 5px; }
-            .result.passed { background-color: #d4edda; color: #155724; border-left: 5px solid #155724; }
-            .result.failed { background-color: #f8d7da; color: #721c24; border-left: 5px solid #721c24; }
-            .info { margin: 15px 0; }
-            .info ul { margin: 10px 0; padding-left: 20px; }
-            .info li { margin: 8px 0; }
-            .footer { font-size: 12px; color: #999; margin-top: 30px; border-top: 1px solid #ddd; padding-top: 15px; }
+            body { font-family: Arial, sans-serif; color: #333; }
+            .header { background-color: #2e7d32; color: white; padding: 20px; text-align: center; }
+            .content { padding: 20px; max-width: 600px; margin: 0 auto; }
+            .result-box { background-color: " . ($result === 'Passed' ? '#d4edda' : '#f8d7da') . "; border: 2px solid " . ($result === 'Passed' ? '#28a745' : '#dc3545') . "; padding: 20px; margin: 20px 0; border-radius: 5px; text-align: center; }
+            .result-text { font-size: 20px; font-weight: bold; color: " . ($result === 'Passed' ? '#155724' : '#721c24') . "; }
+            .details { background-color: #f9f9f9; border-left: 4px solid #2e7d32; padding: 15px; margin: 15px 0; }
+            .details ul { margin: 10px 0; padding-left: 20px; list-style: none; }
+            .details li { margin: 8px 0; }
+            .next-steps { background-color: #f9f9f9; border-left: 4px solid #2e7d32; padding: 15px; margin: 15px 0; }
+            .footer { background-color: #f0f0f0; padding: 15px; text-align: center; font-size: 12px; }
         </style>
     </head>
     <body>
-        <div class='container'>
-            <div class='header'>
-                <h1>PTC SIAMS - Entrance Exam Result</h1>
+        <div class='header'>
+            <h1>PTC Entrance Exam Results</h1>
+            <p>Your Official Score Report</p>
+        </div>
+        <div class='content'>
+            <p>Dear <strong>" . htmlspecialchars($fullname) . "</strong>,</p>
+            <p>Thank you for taking the PTC Entrance Examination. Your results are now available.</p>
+            
+            <div class='result-box'>
+                <p class='result-text'>" . ($result === 'Passed' ? '✓ PASSED' : '✗ DID NOT PASS') . "</p>
+                <p>" . $result_message . "</p>
             </div>
             
-            <div class='content'>
-                <p>Dear <strong>" . htmlspecialchars($fullname) . "</strong>,</p>
-                
-                <div class='result " . strtolower($result) . "'>
-                    " . $result_message . "
-                </div>
-                
-                <div class='info'>
-                    <p><strong>Exam Details:</strong></p>
-                    <ul>
-                        <li><strong>Admission ID:</strong> " . htmlspecialchars($admission_id) . "</li>
-                        <li><strong>Score:</strong> " . $score . " out of " . $totalQuestions . "</li>
-                        <li><strong>Percentage:</strong> " . $percentage . "%</li>
-                        <li><strong>Passing Score:</strong> 75%</li>
-                        <li><strong>Result:</strong> " . $result . "</li>
-                    </ul>
-                </div>
-                
-                <p>If you have any questions or concerns about your results, please contact the admissions office.</p>
-                
-                <div class='footer'>
-                    <p>This is an automated email from PTC SIAMS. Please do not reply to this email.</p>
-                    <p>Philippine Technical College</p>
-                </div>
+            <div class='details'>
+                <h3>📋 Your Exam Results:</h3>
+                <ul>
+                    <li><strong>Admission ID:</strong> " . htmlspecialchars($admission_id) . "</li>
+                    <li><strong>Score Achieved:</strong> " . $score . " out of " . $totalQuestions . "</li>
+                    <li><strong>Percentage:</strong> " . $percentage . "%</li>
+                    <li><strong>Passing Score Required:</strong> 75%</li>
+                </ul>
             </div>
+            
+            <div class='next-steps'>
+                <h3>📧 What's Next?</h3>
+                " . ($result === 'Passed' 
+                    ? "<p>Congratulations on your passing score! The admissions office will contact you shortly with information about program enrollment and next steps.</p>"
+                    : "<p>If you wish to retake the examination, please contact the admissions office to schedule another attempt. We encourage you to prepare thoroughly for your next examination.</p>") . "
+                <p><strong>Questions?</strong> Contact the PTC Admissions Office:</p>
+                <ul style='margin: 10px 0; padding-left: 20px;'>
+                    <li>Email: admissions@ptc.edu.ph</li>
+                    <li>Phone: (02) 8614-4944</li>
+                </ul>
+            </div>
+            
+            <p style='margin-top: 30px;'>Best regards,<br><strong>PTC Admissions Team</strong></p>
+        </div>
+        <div class='footer'>
+            <p>&copy; 2026 Pateros Technological College. All rights reserved.</p>
+            <p>This is an automated email. Please do not reply to this address.</p>
         </div>
     </body>
     </html>
