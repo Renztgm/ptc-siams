@@ -111,6 +111,24 @@ if ($stmt) {
 
 $saveError = count($errors) > 0 ? implode("; ", $errors) : '';
 
+// Update admission table if student passed the exam
+if ($result === 'Passed' && !empty($admission_id) && empty($saveError)) {
+    $current_datetime = date('Y-m-d H:i:s');
+    $update_admission = "UPDATE admissions SET status = 'admitted', admission_date = ? WHERE admission_id = ?";
+    $stmt_update = $conn->prepare($update_admission);
+    if ($stmt_update) {
+        $stmt_update->bind_param('ss', $current_datetime, $admission_id);
+        if (!$stmt_update->execute()) {
+            $errors[] = "Failed to update admission status: " . $stmt_update->error;
+            $saveError = implode("; ", $errors);
+        }
+        $stmt_update->close();
+    } else {
+        $errors[] = "Failed to prepare admission update: " . $conn->error;
+        $saveError = implode("; ", $errors);
+    }
+}
+
 // Send email to student with exam result
 require_once 'send_exam_result_email.php';
 

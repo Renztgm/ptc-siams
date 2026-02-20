@@ -1,4 +1,12 @@
-﻿
+﻿<?php
+session_start();
+
+// Check if admin is logged in
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header("Location: ../public/admin.php");
+    exit;
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -101,15 +109,17 @@
   <div class="sidebar">
     <h2>Admin Dashboard</h2>
 
-    <button class="dropdown-btn">Admission â–¼</button>
+    <button class="dropdown-btn">Admission</button>
     <div class="dropdown-container">
       <a href="student_account.html">Document Verification</a>
       <a href="Faculty_Form.html">Aptitude Test Result</a>
       <a href="admin_exam_config.html">Send Exam Schedule</a>
     </div>
 
-    <button class="dropdown-btn">Enrollment â–¼</button>
+    <button class="dropdown-btn">Enrollment</button>
     <div class="dropdown-container">
+      <a href="enrollement/enrollment_dashboard.php">📊 Enrollment Dashboard</a>
+      <a href="enrollement/admin_enrollment.php">📋 Manage Documents</a>
       <a href="student_account.html">Student Portal</a>
       <a href="#l">Class Schedule</a>
       <a href="#l">LMS Payment Status</a>
