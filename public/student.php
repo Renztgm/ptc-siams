@@ -55,7 +55,7 @@
   </div>
   <div class="login-container">
     <h2>Student Login</h2>
-    <form action="login.php" method="POST">
+    <form action="Student_portal.html" method="POST">
       <label for="username">Username</label>
       <input type="text" id="username" name="username" placeholder="Enter Username" required>
       <label for="password">Password</label>
